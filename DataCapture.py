@@ -1,8 +1,12 @@
+#!/usr/bin/python
     
 # Python modules for reading kinect data: https://github.com/Kinect/PyKinect2
 from pykinect2 import PyKinectV2
 from pykinect2.PyKinectV2 import *
 from pykinect2 import PyKinectRuntime
+
+# PyAutoGUI
+import AutoClick
 
 # Our own Kinect data objects module
 import Skeleton
@@ -10,6 +14,7 @@ import SQL
 
 # Use time from stdlib to check timeout
 from time import time as now
+from time import sleep
 
 # Use numpy and OpenCV to write RGB to video
 import numpy as np
@@ -41,7 +46,9 @@ FRAME_TIME_TABLE        = "tbl_FrameTime"
 JOINT_DATA_TABLE        = "tbl_JointData"
 HAND_DATA_TABLE         = "tbl_HandData"
 
+# This value is used to divided
 
+TIME_DIV = 10000000.0
 
 # This is object that listens from Kinect data, live or playback, and records joint data
 
@@ -61,7 +68,7 @@ class BodyDataExtract(object):
         self._timeout = timeout
 
         # Kinect runtime object
-        self._kinect = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Body)
+        self._kinect = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Color | PyKinectV2.FrameSourceTypes_Body)
 
         # This stores data about the last retrieved body data
         self._body_frame = None
@@ -84,13 +91,15 @@ class BodyDataExtract(object):
         self._video_path = realpath('..\VIDEO\Output_%.03d.avi' % self._p_id)
         self._video = cv2.VideoWriter(self._video_path, fourcc, 30.0, (1920,1080))
         self._video_frames = []
+        self._video_offset = None
 
         # This the descriptor for storing audio data
         self._audio_path = realpath('..\AUDIO\Output_%.03d.wav' % self._p_id)
         self._audio_start = None
+        self._audio_offset = None
         self._audio = np.array([])
+        self._audio_time = []
         self._subframes = 0
-
 
         #debug
         self._debug = 0
@@ -104,10 +113,9 @@ class BodyDataExtract(object):
             p_id  = [row['performance_id'] for row in table]
             return max(p_id) + 1
 
-        
-    def elapsed_time(self):
+    def elapsed_time(self, timestamp):
         """ Returns the time between the current frame and start frame in seconds """
-        return (self._body_frame.timestamp - self._start_time) / 10000000.00
+        return (timestamp - self._start_time) / TIME_DIV
 
     def body_index(self, body_tracking_id):
         """ Stores any new id's and returns their index """
@@ -123,8 +131,10 @@ class BodyDataExtract(object):
     def get_rgb_frame(self):
         """ Returns the RGB image of the frame as 3D matrix """
         if self._kinect.has_new_color_frame():
-            frame = np.array(self._kinect.get_last_color_frame(), dtype="uint8")
-            return frame.reshape([1080,1920,4])
+            #frame = np.array(self._kinect.get_last_color_frame(), dtype="uint8")
+            #return frame.reshape([1080,1920,4])
+            frame = self._kinect.get_last_color_frame()
+            return frame
 
     def get_audio_frame(self):
         """ Returns a numpy array of values between -1.0 and 1.0
@@ -153,8 +163,19 @@ class BodyDataExtract(object):
         return 
 
 
-    def listen(self, getAudio=True, getVideo=False):
+    def listen(self, getAudio=True, getVideo=False, Clicking=False):
+        """ Main application loop """
+
+        # Set up automated stepping of file
+        
+        if Clicking:
+
+            clicker = AutoClick.Clicker(0.5)
+
+            clicker.start()
+
         # -------- Main Program Loop -----------
+        
         while not self._done:
 
             # BODY JOINTS
@@ -177,9 +198,9 @@ class BodyDataExtract(object):
 
                 # Work out the amount of time between frames
 
-                elapsed = self.elapsed_time()
+                elapsed = self.elapsed_time(self._body_frame.timestamp)
 
-                # Continue looping until we get a new frame or we timeout
+                # Continue looping until we get a new frame, we timeout, or we go back to the start
 
                 if elapsed == self._elapsed:
 
@@ -187,6 +208,12 @@ class BodyDataExtract(object):
 
                         self._done = True
                         
+                    continue
+
+                elif elapsed < self._elapsed:
+
+                    self._done = True
+
                     continue
 
                 else:
@@ -202,6 +229,8 @@ class BodyDataExtract(object):
                 # Store the frame number and time relative to the start
 
                 FrameTime = [('performance_id', self._p_id), ('frame', self._frame_count), ('time', self._elapsed)]
+
+                # Add the time stamp to the database
 
                 self._database.insert(FRAME_TIME_TABLE, FrameTime)
 
@@ -281,27 +310,43 @@ class BodyDataExtract(object):
 
             # AUDIO
 
-            #if self._receiving_data and self._kinect.has_new_audio_frame():
             if getAudio and self._kinect.has_new_audio_frame():
-
-                if self._audio_start is None:
-
-                    self._audio_start = self._elapsed
 
                 audio_frame = self.get_audio_frame()
 
-                self.add_to_audio(audio_frame)
+                self.add_to_audio(audio_frame.data())
+
+                # Get the +- offset relative to body frame data start time
+
+                if self._audio_offset is None:
+
+                    self._audio_offset = self.elapsed_time(audio_frame.timestamp())
 
 
             # RGB VIDEO
 
-            if getVideo:
+            if getVideo and self._kinect.has_new_color_frame():
+                
+                rgb_frame = self.get_rgb_frame()
+                
+                self._video.write(rgb_frame.data())
 
-                pass
+                # Get the +- offset relative to body frame data start time
+
+                if self._video_offset is None:
+
+                    self._video_offset = self.elapsed_time(rgb_frame.timestamp())
 
         # Done!
+        if Clicking:
+            clicker.stop()
+
+        # Release any files etc
+        
         self.close()
         self.write_audio()
+        self._video.release()
+        cv2.destroyAllWindows()
 
         return
         
@@ -309,8 +354,8 @@ class BodyDataExtract(object):
         """ Enter a string name for the performance through CLI """
         val = "'%s'" % raw_input("\nEnter a name for your recording: ")
         self._database.insert(PERFORMANCE_NAME_TABLE, [("performance_id", self._p_id),("name", val)])
-        self._database.insert(AUDIO_PATH_TABLE, [("performance_id", self._p_id), ("audio_id", 0), ("path", self._audio_path)])
-        self._database.insert(AUDIO_TIME_TABLE, [("performance_id", self._p_id), ("audio_id", 0), ("start_pos", self._audio_start), ("end_pos", self._elapsed)])
+        self._database.insert(AUDIO_PATH_TABLE, [("performance_id", self._p_id), ("audio_id", 0), ("path", self._audio_path), ("offset", self._audio_offset)])
+        self._database.insert(VIDEO_PATH_TABLE, [("performance_id", self._p_id), ("video_id", 0), ("path", self._video_path), ("offset", self._video_offset)])
         return
 
     def close(self):
@@ -348,7 +393,7 @@ def CreateDatabase(filename):
 
         db.insert(JOINT_NAMES_TABLE, [("joint_id", joint._id), ("joint_name", str(joint))])
 
-    # HandStates
+    # HandStates5
 
     db.create_table(HAND_STATES_TABLE, [("hand_state", "integer"),("state_name","text")])
 
@@ -392,16 +437,14 @@ def CreateDatabase(filename):
                                       ("right_hand_confidence","real")])
 
     db.create_table(VIDEO_PATH_TABLE, [("performance_id","integer"),
-                                       ("path","text")])
+                                       ("video_id","integer"),
+                                       ("path","text"),
+                                       ("offset","real")])
 
     db.create_table(AUDIO_PATH_TABLE, [("performance_id","integer"),
                                        ("audio_id","integer"),
-                                       ("path","text")])
-
-    db.create_table(AUDIO_TIME_TABLE, [("performance_id","integer"),
-                                       ("audio_id","integer"),
-                                       ("start_pos","real"),
-                                       ("end_pos","real")])
+                                       ("path","text"),
+                                       ("offset","real")])
 
     db.save()
     db.close()
@@ -417,10 +460,10 @@ if __name__ == "__main__":
     if not FileExists(fn):
         CreateDatabase(fn)
 
-    app = BodyDataExtract(fn)
+    app = BodyDataExtract(fn, 10)
 
     print "Listening for Kinect data"
     
-    app.listen()
+    app.listen(getAudio=True, getVideo=True, Clicking=True)
 
     print "done"

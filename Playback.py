@@ -1,10 +1,10 @@
 import Skeleton
-#import AudioVisual
 import SQL
 
 import pygame, sys
 import numpy as np
 import cv2
+
 from os.path import realpath
 
 import Tkinter as tk
@@ -31,6 +31,15 @@ def img(surface):
     array = cv2.transpose(array)
     array = cv2.cvtColor(array, cv2.COLOR_BGR2RGB)
     return array
+
+def surface(img, resize=1):
+    """ surface(numpy.array) -> pygame.Surface """
+    surf = cv2.resize(img, (0,0), fx=resize, fy=resize)
+    surf = cv2.cvtColor(surf, cv2.COLOR_BGR2RGB)
+    surf = pygame.surfarray.make_surface(surf)
+    surf = pygame.transform.rotate(surf, -90)
+    surf = pygame.transform.flip(surf, True, False)
+    return surf
 
 class KinectDataSelect:
     """ Tkinter UI for selecting a processed Kinect file for playing back """
@@ -69,7 +78,7 @@ class KinectDataSelect:
         self._toVideo.pack()
 
         # Location of videos
-        self._video_fp_root = "VIDEO/%s.avi"
+        self._video_fp_root = "../VIDEO/%s.avi"
 
         # Run
         self._root.mainloop()
@@ -84,7 +93,6 @@ class KinectDataSelect:
 
     def video_filename(self):
         """ Returns the video file path of the recording """
-
         return realpath(self._video_fp_root % self.performance_name())
 
     def performance_id(self):
@@ -205,6 +213,8 @@ class KinectDataPlayer:
 
         self._toFile = kwargs.get("output", None)
 
+        self._video = cv2.VideoCapture("../VIDEO/Output_000.avi")
+
         # Kinect data
 
         self._bodies = Skeleton.LoadPerformance(performance_id)
@@ -258,6 +268,7 @@ class KinectDataPlayer:
         self._head_size = sum(self._size) / 60
 
     def update(self):
+        """ Writes new frame to screen/file """
         if self._toFile:
             self._writer.write( img(self._surface) )
             self._screen.blit( self._percent, (0,0))
@@ -269,6 +280,7 @@ class KinectDataPlayer:
         return
 
     def ratio(self):
+        """ Returns the the % of change in size of frame """
         return float(self._size[0]) / self._resolution[0]
 
     def convert(self, *xy ):
@@ -334,7 +346,6 @@ class KinectDataPlayer:
         """ Plays the performance using real time rendering in PyGame """
 
         quitting = False
-
         t = self._time
         
         for frame in xrange(self._clip_end):
@@ -349,9 +360,18 @@ class KinectDataPlayer:
             if quitting:
                 break
 
-            # Blank background
+            # Load video frame
 
-            self._surface.fill(BLACK)
+            try:
+
+                ret, videoFrame = self._video.read()
+                self._surface = surface(videoFrame, self.ratio())
+
+            except:
+
+                self._surface.fill(BLACK)
+
+            # Load the video frame
 
             if self._toFile:
                 x = (float(frame) / self._clip_end) * 100
@@ -394,7 +414,10 @@ class KinectDataPlayer:
             self.update()
 
         # Exit pygame
+        self._video.release()
         pygame.quit()
+        
+        #cv2.destroyAllWindows()
         # Exit OpenCV
         if self._toFile:
             self._writer.release()
