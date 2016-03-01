@@ -1,3 +1,5 @@
+""" This is a work in progress """
+
 import matplotlib.pyplot as plt
 import Skeleton
 from math import sqrt

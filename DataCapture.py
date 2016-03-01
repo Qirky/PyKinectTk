@@ -5,26 +5,24 @@ from pykinect2 import PyKinectV2
 from pykinect2.PyKinectV2 import *
 from pykinect2 import PyKinectRuntime
 
-# PyAutoGUI
-import AutoClick
-
-# Our own Kinect data objects module
-import Skeleton
-import SQL
+# Our own modules
+from utils import SQL, AutoClick, Skeleton
 
 # Use time from stdlib to check timeout
 from time import time as now
-from time import sleep
 
 # Use numpy and OpenCV to write RGB to video
 import numpy as np
 import cv2
 
-# Use scipy to write out audio
+# Use wave module to write audio
 import wave
 
-# Use real path to name files
-from os.path import realpath
+# Use os.path to get absolute path name name files
+from os.path import abspath, join, dirname
+
+def path(fn):
+    return abspath(join(dirname(__file__), fn))
 
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*"XVID")
@@ -52,9 +50,9 @@ TIME_DIV = 10000000.0
 
 # This is object that listens from Kinect data, live or playback, and records joint data
 
-class BodyDataExtract(object):
+class KinectDataExtract():
     
-    def __init__(self, db=":memory:", timeout=1):
+    def __init__(self, db, timeout=1):
 
         # Loop until the program stop receiving kinect stream data
         self._done = False
@@ -88,13 +86,13 @@ class BodyDataExtract(object):
         self._p_id = self.get_performance_id()
 
         # This is the descriptor for storing RGB video
-        self._video_path = realpath('..\VIDEO\Output_%.03d.avi' % self._p_id)
+        self._video_path = path('..\VIDEO\Output_%.03d.avi' % self._p_id)
         self._video = cv2.VideoWriter(self._video_path, fourcc, 30.0, (1920,1080))
         self._video_frames = []
         self._video_offset = None
 
         # This the descriptor for storing audio data
-        self._audio_path = realpath('..\AUDIO\Output_%.03d.wav' % self._p_id)
+        self._audio_path = path('..\AUDIO\Output_%.03d.wav' % self._p_id)
         self._audio_start = None
         self._audio_offset = None
         self._audio = np.array([])
@@ -372,14 +370,17 @@ class BodyDataExtract(object):
 
         return
 
-def FileExists(filename):
-    """ Returns true if the filename points to a valid file """
-    try:
-        f=open(filename)
-        f.close()
-        return True
-    except:
-        return False
+def CreateEnvironment():
+    """ Checks if the necessary folders exist and creates them if not """
+    from os import mkdir
+    from os.path import isdir
+    
+    directories = ["AUDIO","VIDEO","EXT_AUDIO","XEF","IMAGES"]
+    
+    for d in directories:
+        d_path = path("../" + d)
+        if not isdir(d_path):
+            mkdir(d_path)
 
 def CreateDatabase(filename):
     """ Creates the database and adds tables used by all performance data tables """
@@ -454,13 +455,22 @@ def CreateDatabase(filename):
 
 if __name__ == "__main__":
 
-    # Check if our database is there, if not then create it
+    # Create any missing folders
+
+    CreateEnvironment()
+
+    # Check if our database is there, if not then create environment
+    
     fn = DATABASE
 
-    if not FileExists(fn):
+    from os.path import isfile
+
+    if not isfile(fn):
         CreateDatabase(fn)
 
-    app = BodyDataExtract(fn, 10)
+    # Create our object and start listening for data /// Change arguments below for custom settings
+
+    app = KinectDataExtract(fn, 10)
 
     print "Listening for Kinect data"
     

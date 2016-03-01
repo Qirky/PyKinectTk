@@ -1,0 +1,5 @@
+Credit goes to vladkol for his work on the PyKinect2 Code found here:
+
+https://github.com/Kinect/PyKinect2
+
+This has been adapted and updated to allow audio and video streams to be extracted with frame timestamps.

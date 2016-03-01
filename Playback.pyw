@@ -1,5 +1,13 @@
-import Skeleton
-import SQL
+"""
+    This program reads data from extracted video and skeleton data
+    from the Kinect and plays it back to the user using PyGame.
+
+    The data can also be saved as an .avi file, useful for adding
+    audio date -> A function to be added.
+
+"""
+
+from utils import SQL, Skeleton
 
 import pygame, sys
 import numpy as np
@@ -93,7 +101,7 @@ class KinectDataSelect:
 
     def video_filename(self):
         """ Returns the video file path of the recording """
-        return realpath(self._video_fp_root % self.performance_name())
+        return (self._video_fp_root % self.performance_name())
 
     def performance_id(self):
         """ Returns the performance ID of the selected item """
@@ -417,7 +425,6 @@ class KinectDataPlayer:
         self._video.release()
         pygame.quit()
         
-        #cv2.destroyAllWindows()
         # Exit OpenCV
         if self._toFile:
             self._writer.release()
