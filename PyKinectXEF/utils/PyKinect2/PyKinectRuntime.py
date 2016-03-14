@@ -1,5 +1,5 @@
-from pykinect2 import PyKinectV2
-from pykinect2.PyKinectV2 import *
+import PyKinectV2
+from PyKinectV2 import *
 
 import ctypes
 import _ctypes 
@@ -530,7 +530,7 @@ class KinectBodyFrameData(object):
         self.bodies = None
         self.floor_clip_plane = None
 
-        self.timestamp = body_frame_relative_time
+        self.relative_time = body_frame_relative_time
         
         if bodyFrame is not None:
             self.floor_clip_plane = bodyFrame.FloorClipPlane
@@ -539,8 +539,11 @@ class KinectBodyFrameData(object):
             for i in range(0, max_body_count):
                self.bodies[i] = KinectBody(body_frame_data[i])
 
+    def timestamp(self):
+        return self.relative_time
+
     def copy(self):
-        res = KinectBodyFrameData(None, None, 0, self.timestamp)
+        res = KinectBodyFrameData(None, None, 0, self.relative_time)
         res.floor_clip_plane = self.floor_clip_plane
         res.bodies = numpy.copy(self.bodies)
         return res
