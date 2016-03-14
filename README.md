@@ -10,8 +10,7 @@ Requirements
 ------------
 
 - [PyGame](http://pygame.org/hifi.html) (For Playback)*
-- [OpenCV2](https://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_setup/py_setup_in_windows/py_setup_in_windows.html#install-opencv-python-in-windows) (For colour stream capture)
-- 
+- [OpenCV2](https://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_setup/py_setup_in_windows/py_setup_in_windows.html#install-opencv-python-in-windows) (For colour stream capture) 
 
 \* Non-official 64-bit installtion of PyGame can be found [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame)
 
