@@ -1,0 +1,4 @@
+pygame
+numpy
+pyautogui
+cv2
