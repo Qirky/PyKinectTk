@@ -10,9 +10,6 @@ from ..utils import *
 from ..utils.SQL import *
 from ..utils.PyKinect2 import *
 
-#: AutoClick automatically steps through the XEF file in Kinect Studio
-import AutoClick
-
 #: Import a user friendly wrapper for writing video / audio
 from Writers import VideoWriter, AudioWriter
 
@@ -158,6 +155,8 @@ class KinectService():
         
         if Clicking:
 
+            import AutoClick
+
             clicker = AutoClick.ThreadClicker(0.5)
 
             clicker.start()
@@ -259,8 +258,6 @@ class KinectService():
                         # Update timings
 
                         self.update_timings()
-
-                        
 
             # AUDIO
 

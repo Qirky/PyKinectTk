@@ -15,15 +15,14 @@ from pygame import display, font
 
 class ConvertKinect(Writers.VideoWriter, KinectDataPlayer):
 
-    def __init__(self, performance_id, outputFile):
+    def __init__(self, performance_id, outputFile, **kwargs):
 
         # Inheritance
-        KinectDataPlayer.__init__(self, performance_id)
+        KinectDataPlayer.__init__(self, performance_id, **kwargs)
         Writers.VideoWriter.__init__(self, outputFile, self._fps)
-        
+
         # Set to "full screen"
         self._size = self._width, self._height = self._resolution
-
         # Create a small graphic to display progress
         self._screen = pygame.display.set_mode((120,75))
         self._progress = pygame.Surface((120,75))
@@ -50,10 +49,10 @@ class ConvertKinect(Writers.VideoWriter, KinectDataPlayer):
         
         return
 
-    def draw_percent_complete(self, val):
+    def draw_percent_complete(self):
         """ Draws the portion of video that has been saved as a percent """
 
-        x = (float(self._current_frame) / self._clip_end) * 100
+        x = (float(self._current_frame) / self._clip_length) * 100
 
         text  = font.SysFont("Courier New", 32)
 

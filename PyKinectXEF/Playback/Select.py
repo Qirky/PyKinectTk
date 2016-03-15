@@ -49,6 +49,21 @@ class KinectDataSelect:
         self._toVideo = tk.Button(self._root, text="Save as Video", command=self.to_video)
         self._toVideo.pack()
 
+        # Radio buttons for selecting stream to play/store
+        self._streams = {}
+        self._streams['body']  = tk.IntVar(value=1)
+        self._streams['video'] = tk.IntVar(value=1)
+        self._streams['audio'] = tk.IntVar(value=0)
+        self._streams['depth'] = tk.IntVar(value=0)
+
+        for stream in self._streams:
+            button = tk.Checkbutton(self._root, text=stream,
+                                    variable=self._streams[stream],
+                                    offvalue=False, onvalue=True,
+                                    anchor=tk.W)
+            button.pack()
+        
+
         # Location of videos
         self._video_fp_root = VIDEO_DIR + "%s.avi"
 
@@ -60,6 +75,10 @@ class KinectDataSelect:
         self._db.close()
         self._root.destroy()
         return
+
+    def get_streams(self):
+        """ Returns the dictionary of stream names and the T/F flag to play them back """
+        return dict([(stream, val.get()) for stream, val in self._streams.items()])
 
     def selected(self):
         """ Returns the index of the selected item """
@@ -103,7 +122,7 @@ class KinectDataSelect:
 
             # Begin pygame playback
 
-            player = KinectDataPlayer(pid, video=True)
+            player = KinectDataPlayer(pid, **self.get_streams())
             self._root.withdraw()
             player.run()
 
@@ -120,7 +139,7 @@ class KinectDataSelect:
     def to_video(self):
         """ Creates a player object that outputs to file not screen """
 
-        try:
+        if True:#try:
 
             # Get the performance id
 
@@ -128,12 +147,12 @@ class KinectDataSelect:
 
             # Begin pygame to video
 
-            player = ConvertKinect(pid, self.video_filename())
+            player = ConvertKinect(pid, self.video_filename(), video=True)
             player.run()
 
             InfoMsg("File Saved", "%s has been saved successfully" % self.video_filename())
 
-        except:
+        else:#except:
 
             pass
 

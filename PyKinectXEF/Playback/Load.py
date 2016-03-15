@@ -46,6 +46,7 @@ def BodyData(p_id):
     return bodies
 
 def VideoData(p_id):
+    """ Takes a performance id and returns a dictionary of frame numbers and their timestamps """
 
     # Load frames and times
 
@@ -56,3 +57,49 @@ def VideoData(p_id):
     # Return as a dict -> Frame no. & Time
 
     return dict([(row['frame'], row['time']) for row in data])
+
+class FrameTime:
+
+    def __init__(self, frametime):
+
+        self.frametimes = frametime
+        
+        self.frames = sorted(frametime.keys())[:-1]
+
+        self.l = len(self.frametimes)
+
+    def __len__(self):
+        return self.l
+
+    def size(self):
+        return self.l
+
+    def timestamps(self):
+
+        return self.frametimes.values()
+
+    def __iter__(self):
+
+        for n in self.frametimes:
+
+            yield n
+
+    def __getitem__(self, key):
+
+        return self.frametimes[key]
+
+    def frame_at_time(self, time):
+
+        for i, frame in enumerate(self.frames):
+
+            if time <= self.frametimes[self.frames[i+1]]:
+
+                return frame      
+
+
+
+
+
+
+
+        

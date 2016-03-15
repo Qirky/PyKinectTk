@@ -1,1 +1,5 @@
 1. Sort out inferred tracking etc. for Playback
+2. Don't store path for tbl_VideoPath etc -> that comes from config file
+3. Audio playback
+4. Depth information extration / playback
+5. Performance select GUI
