@@ -1,3 +1,0 @@
-numpy
-pyautogui
-cv2
