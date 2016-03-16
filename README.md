@@ -13,7 +13,7 @@ Requirements
 - [matplotlib](https://pypi.python.org/pypi/matplotlib/1.5.1)
 - [PyGame](http://pygame.org/hifi.html)*
 
-\* Non-official 64-bit installtion of PyGame can be found [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame)
+\* Non-official 64-bit installation of PyGame can be found [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame)
 
 Examples
 --------
