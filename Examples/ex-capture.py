@@ -4,9 +4,11 @@
 
 if __name__ == "__main__":
 
-    from PyKinectXEF import Capture
+    import PyKinectXEF
 
-    App = Capture.KinectService(timeout=2)
+    PyKinectXEF.start()
+
+    App = PyKinectXEF.Capture.KinectService(timeout=2)
 
     print "Listening for Kinect data"
     

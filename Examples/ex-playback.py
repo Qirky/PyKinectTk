@@ -4,6 +4,8 @@
 
 if __name__ == "__main__":
 
-    from PyKinectXEF import Playback
+    import PyKinectXEF
 
-    App = Playback.KinectDataSelect()
+    PyKinectXEF.start()    
+
+    App = PyKinectXEF.Playback.KinectDataSelect()

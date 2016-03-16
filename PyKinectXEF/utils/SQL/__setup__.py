@@ -103,4 +103,4 @@ def CreateEnvironment():
 
 #: Automatically called to create a work environment
 
-CreateEnvironment()
+
