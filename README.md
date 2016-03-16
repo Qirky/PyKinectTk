@@ -22,42 +22,43 @@ In the Examples folder there are two files; `ex-capture.py` and `ex-playback.py`
 
 ### Example 1: Data Capture
 
-	"""
-	    Example script for extracting Kinect Data from Kinect Studio
-	"""
-	
-	if __name__ == "__main__":
-	
-	    # Import package
-	
-	    import PyKinectXEF
-	
-	    # Initialise work environment
-	
-	    PyKinectXEF.init()
-	
-	    # Create connection to Kinect Service
-	
-	    App = PyKinectXEF.Capture.KinectService(timeout=2)
-	
-	    # Start capturing data using auto-click
-	
-	    print "Listening for Kinect data"
-	    
-	    App.listen(getVideo=True, Clicking=True)
-	
-	    # Add a meaningful name to the recording
-	    
-	    name = raw_input("Would you like to name your recording? ")
-	
-	    App.NameRecording(name)
-	
-	    # Exit
-	
-	    raw_input("Recording saved as '%s', press Return to quit" % name)
-	
-	    App.close()
+```
+"""
+    Example script for extracting Kinect Data from Kinect Studio
+"""
 
+if __name__ == "__main__":
+
+    # Import package
+
+    import PyKinectXEF
+
+    # Initialise work environment
+
+    PyKinectXEF.init()
+
+    # Create connection to Kinect Service
+
+    App = PyKinectXEF.Capture.KinectService(timeout=2)
+
+    # Start capturing data using auto-click
+
+    print "Listening for Kinect data"
+    
+    App.listen(getVideo=True, Clicking=True)
+
+    # Add a meaningful name to the recording
+    
+    name = raw_input("Would you like to name your recording? ")
+
+    App.NameRecording(name)
+
+    # Exit
+
+    raw_input("Recording saved as '%s', press Return to quit" % name)
+
+    App.close()
+```
 ##### The `Init()` Function 
 
 At the start of your application you need to call the `PyKinectXEF.init()` function. It checks the contents of `PyKinectXEF/utils/Settings/config` to see if it contains a filepath. If it does not, you will be asked to select a folder to set as your working environment. This creates a number of directories for storing extracted data. You will only be asked to set  your working environment on your first use, or if the path to the working environment directory changes. For more info on your working environment, see [Your Working Environment](http://foxdot.github.io/PyKinectXEF/API.html).
