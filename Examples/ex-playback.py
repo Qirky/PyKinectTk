@@ -1,5 +1,8 @@
 """
-    Example script for extracting Kinect Data from Kinect Studio
+    ex-playback.py
+
+        Example script for combining extracted
+        data streams and playing them back to the user
 """
 
 if __name__ == "__main__":

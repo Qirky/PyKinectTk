@@ -22,42 +22,45 @@ In the Examples folder there are two files; `ex-capture.py` and `ex-playback.py`
 
 ### Example 1: Data Capture
 
-	"""
-	    Example script for extracting Kinect Data from Kinect Studio
-	"""
-	
-	if __name__ == "__main__":
-	
-	    # Import package
-	
-	    import PyKinectXEF
-	
-	    # Initialise work environment
-	
-	    PyKinectXEF.init()
-	
-	    # Create connection to Kinect Service
-	
-	    App = PyKinectXEF.Capture.KinectService(timeout=2)
-	
-	    # Start capturing data using auto-click
-	
-	    print "Listening for Kinect data"
-	    
-	    App.listen(getVideo=True, Clicking=True)
-	
-	    # Add a meaningful name to the recording
-	    
-	    name = raw_input("Would you like to name your recording? ")
-	
-	    App.NameRecording(name)
-	
-	    # Exit
-	
-	    raw_input("Recording saved as '%s', press Return to quit" % name)
-	
-	    App.close()
+```Python
+"""
+    ex-capture.py
+    
+        Example script for extracting Kinect Data from Kinect Studio
+"""
 
+if __name__ == "__main__":
+
+    # Import package
+
+    import PyKinectXEF
+
+    # Initialise work environment
+
+    PyKinectXEF.init()
+
+    # Create connection to Kinect Service
+
+    App = PyKinectXEF.Capture.KinectService(timeout=2)
+
+    # Start capturing data using auto-click
+
+    print "Listening for Kinect data"
+    
+    App.listen(getVideo=True, Clicking=True)
+
+    # Add a meaningful name to the recording
+    
+    name = raw_input("Would you like to name your recording? ")
+
+    App.NameRecording(name)
+
+    # Exit
+
+    raw_input("Recording saved as '%s', press Return to quit" % name)
+
+    App.close()
+```
 ##### The `Init()` Function 
 
 At the start of your application you need to call the `PyKinectXEF.init()` function. It checks the contents of `PyKinectXEF/utils/Settings/config` to see if it contains a filepath. If it does not, you will be asked to select a folder to set as your working environment. This creates a number of directories for storing extracted data. You will only be asked to set  your working environment on your first use, or if the path to the working environment directory changes. For more info on your working environment, see [Your Working Environment](http://foxdot.github.io/PyKinectXEF/API.html).
@@ -66,8 +69,10 @@ At the start of your application you need to call the `PyKinectXEF.init()` funct
 
 This is the Python class that talks to the Microsoft Kinect service that is running on the local machine. The timeout argument specifies how long it should wait after receiving a frame of data from the Kinect Service before deciding any data streams have stopped. Once it has been created, you can invoke the the `listen()` method to begin collecting data that is being processed by the Kinect Service. By default, the `Capture.KinectService()` only captures skeleton data but you can change this by invoking `listen()` with keyword "getter" arguments:
 
-	App = PyKinectXEF.Capture.KinectService(timeout=2)
-	App.listen(getAudio=True, getVideo=True, getDepth=True, Clicking=True)
+```Python
+App = PyKinectXEF.Capture.KinectService(timeout=2)
+App.listen(getAudio=True, getVideo=True, getDepth=True, Clicking=True)
+```
 
 **Note:** Depth data capture has not been implemented yet
 
@@ -77,24 +82,29 @@ The `Clicking` keyword is used to automatically step through files in Kinect Stu
 
 ### Example 2: Data Playback
 
-	"""
-	    Example script for extracting Kinect Data from Kinect Studio
-	"""
-	
-	if __name__ == "__main__":
-	
-	    # Import module
-	
-	    import PyKinectXEF
-	
-	    # Initialise work environment
-	
-	    PyKinectXEF.init()
-	
-	    # Create TKinter GUI to select recording
-	
-	    App = PyKinectXEF.Playback.KinectDataSelect()
+```Python
+"""
+    ex-playback.py
 
+        Example script for combining extracted
+        data streams and playing them back to the user
+"""
+
+if __name__ == "__main__":
+
+    # Import module
+
+    import PyKinectXEF
+
+    # Initialise work environment
+
+    PyKinectXEF.init()
+
+    # Create TKinter GUI to select recording
+
+    App = PyKinectXEF.Playback.KinectDataSelect()
+
+```
 
 
 Documentation

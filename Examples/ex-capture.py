@@ -1,5 +1,7 @@
 """
-    Example script for extracting Kinect Data from Kinect Studio
+    ex-capture.py
+    
+        Example script for extracting Kinect Data from Kinect Studio
 """
 
 if __name__ == "__main__":
