@@ -32,24 +32,22 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h1>
-<a id="pykinectxef" class="anchor" href="#pykinectxef" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PyKinectXEF</h1>
+<a id="about-the-project" class="anchor" href="#about-the-project" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About the Project</h1>
 
-<p>A Python application for extracting data from Kinect Studio V2</p>
-
-<p><strong>Note:</strong>
-This Python package uses a lot of code from PyKinect2, which can be found here: <a href="https://github.com/vladkol">https://github.com/vladkol</a>, and I would like to thank vladkol for his incredible work. His existing code has been adapted and is included as a sub-package as part of this module.</p>
+<p><strong>PyKinectXEF</strong> is a Python package that allows you to extract the data you want from Microsoft extended event files (.xef) generated from the Microsoft Kinect V2 and even from a live stream of data. The package also comes with modules that allow you to play the captured data back, and even plot the data on graphs using matplot.</p>
 
 <h2>
 <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
 
 <ul>
 <li>
-<a href="http://pygame.org/hifi.html">PyGame</a> (For Playback)*</li>
+<a href="https://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_setup/py_setup_in_windows/py_setup_in_windows.html#install-opencv-python-in-windows">OpenCV2</a> and its dependencies for colour stream capture</li>
 <li>
-<a href="https://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_setup/py_setup_in_windows/py_setup_in_windows.html#install-opencv-python-in-windows">OpenCV2</a> (For colour stream capture)</li>
-<li>
-<a href="https://pyautogui.readthedocs.org/en/latest/">PyAutoGUI</a> (For automated click-stepping - see below)</li>
+<a href="https://pyautogui.readthedocs.org/en/latest/">PyAutoGUI</a> for automated click-stepping</li>
 <li><a href="https://pypi.python.org/pypi/comtypes">comtypes</a></li>
+<li><a href="https://pypi.python.org/pypi/matplotlib/1.5.1">matplotlib</a></li>
+<li>
+<a href="http://pygame.org/hifi.html">PyGame</a>*</li>
 </ul>
 
 <p>* Non-official 64-bit installtion of PyGame can be found <a href="http://www.lfd.uci.edu/%7Egohlke/pythonlibs/#pygame">here</a></p>
@@ -62,12 +60,93 @@ This Python package uses a lot of code from PyKinect2, which can be found here: 
 <h3>
 <a id="example-1-data-capture" class="anchor" href="#example-1-data-capture" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example 1: Data Capture</h3>
 
-<p>Watch this space...</p>
+<div class="highlight highlight-source-python"><pre><span class="pl-s"><span class="pl-pds">"""</span></span>
+<span class="pl-s">    Example script for extracting Kinect Data from Kinect Studio</span>
+<span class="pl-s"><span class="pl-pds">"""</span></span>
+
+<span class="pl-k">if</span> <span class="pl-c1">__name__</span> <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">"</span>__main__<span class="pl-pds">"</span></span>:
+
+    <span class="pl-c"># Import package</span>
+
+    <span class="pl-k">import</span> PyKinectXEF
+
+    <span class="pl-c"># Initialise work environment</span>
+
+    PyKinectXEF.init()
+
+    <span class="pl-c"># Create connection to Kinect Service</span>
+
+    App <span class="pl-k">=</span> PyKinectXEF.Capture.KinectService(<span class="pl-v">timeout</span><span class="pl-k">=</span><span class="pl-c1">2</span>)
+
+    <span class="pl-c"># Start capturing data using auto-click</span>
+
+    <span class="pl-c1">print</span> <span class="pl-s"><span class="pl-pds">"</span>Listening for Kinect data<span class="pl-pds">"</span></span>
+
+    App.listen(<span class="pl-v">getVideo</span><span class="pl-k">=</span><span class="pl-c1">True</span>, <span class="pl-v">Clicking</span><span class="pl-k">=</span><span class="pl-c1">True</span>)
+
+    <span class="pl-c"># Add a meaningful name to the recording</span>
+
+    name <span class="pl-k">=</span> <span class="pl-v">raw_input</span>(<span class="pl-s"><span class="pl-pds">"</span>Would you like to name your recording? <span class="pl-pds">"</span></span>)
+
+    App.NameRecording(name)
+
+    <span class="pl-c"># Exit</span>
+
+    <span class="pl-v">raw_input</span>(<span class="pl-s"><span class="pl-pds">"</span>Recording saved as '<span class="pl-c1">%s</span>', press Return to quit<span class="pl-pds">"</span></span> <span class="pl-k">%</span> name)
+
+    App.close()</pre></div>
+
+<h5>
+<a id="the-init-function" class="anchor" href="#the-init-function" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The <code>Init()</code> Function</h5>
+
+<p>At the start of your application you need to call the <code>PyKinectXEF.init()</code> function. It checks the contents of <code>PyKinectXEF/utils/Settings/config</code> to see if it contains a filepath. If it does not, you will be asked to select a folder to set as your working environment. This creates a number of directories for storing extracted data. You will only be asked to set  your working environment on your first use, or if the path to the working environment directory changes. For more info on your working environment, see <a href="http://foxdot.github.io/PyKinectXEF/API.html">Your Working Environment</a>.</p>
+
+<h5>
+<a id="the-pykinectcapturekinectservice-class" class="anchor" href="#the-pykinectcapturekinectservice-class" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The <code>PyKinect.Capture.KinectService()</code> class</h5>
+
+<p>This is the Python class that talks to the Microsoft Kinect service that is running on the local machine. The timeout argument specifies how long it should wait after receiving a frame of data from the Kinect Service before deciding any data streams have stopped. Once it has been created, you can invoke the the <code>listen()</code> method to begin collecting data that is being processed by the Kinect Service. By default, the <code>Capture.KinectService()</code> only captures skeleton data but you can change this by invoking <code>listen()</code> with keyword "getter" arguments:</p>
+
+<div class="highlight highlight-source-python"><pre>App <span class="pl-k">=</span> PyKinectXEF.Capture.KinectService(<span class="pl-v">timeout</span><span class="pl-k">=</span><span class="pl-c1">2</span>)
+App.listen(<span class="pl-v">getAudio</span><span class="pl-k">=</span><span class="pl-c1">True</span>, <span class="pl-v">getVideo</span><span class="pl-k">=</span><span class="pl-c1">True</span>, <span class="pl-v">getDepth</span><span class="pl-k">=</span><span class="pl-c1">True</span>, <span class="pl-v">Clicking</span><span class="pl-k">=</span><span class="pl-c1">True</span>)</pre></div>
+
+<p><strong>Note:</strong> Depth data capture has not been implemented yet</p>
+
+<p>The <code>Clicking</code> keyword is used to automatically step through files in Kinect Studio, which is useful when you want to process more data intensive streams such as video. <code>Clicking</code> <strong>should not</strong> be set to <code>True</code> when capturing data from a live stream. For best results when capturing video data, record your data using the Kinect Studio as an <code>.xef</code> file and then process it using the automated clicking method. When doing so, you will be asked to hover over the "step file" button in Kinect Studio and press "Return". This will begin automatically clicking the "step file" button every 0.5 seconds (2fps) to ensure minimal video frames are dropped.  </p>
+
+<hr>
 
 <h3>
 <a id="example-2-data-playback" class="anchor" href="#example-2-data-playback" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example 2: Data Playback</h3>
 
-<p>And this one too...</p>
+<div class="highlight highlight-source-python"><pre><span class="pl-s"><span class="pl-pds">"""</span></span>
+<span class="pl-s">    Example script for extracting Kinect Data from Kinect Studio</span>
+<span class="pl-s"><span class="pl-pds">"""</span></span>
+
+<span class="pl-k">if</span> <span class="pl-c1">__name__</span> <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">"</span>__main__<span class="pl-pds">"</span></span>:
+
+    <span class="pl-c"># Import module</span>
+
+    <span class="pl-k">import</span> PyKinectXEF
+
+    <span class="pl-c"># Initialise work environment</span>
+
+    PyKinectXEF.init()
+
+    <span class="pl-c"># Create TKinter GUI to select recording</span>
+
+    App <span class="pl-k">=</span> PyKinectXEF.Playback.KinectDataSelect()</pre></div>
+
+<h2>
+<a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h2>
+
+<p>More detailed information on the PyKinectXEF API can be found here:</p>
+
+<p><a href="http://foxdot.github.io/PyKinectXEF/API.html">http://foxdot.github.io/PyKinectXEF/API.html</a> </p>
+
+<h2>
+<a id="acknowledgements" class="anchor" href="#acknowledgements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Acknowledgements</h2>
+
+<p>This Python package uses a lot of code from PyKinect2, which can be found here: <a href="https://github.com/vladkol">https://github.com/vladkol</a>, and I would like to thank <em>vladkol</em> for his incredible work. His existing code has been adapted and is included as a sub-package as part of this module.</p>
       </section>
     </div>
 
