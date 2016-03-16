@@ -67,8 +67,10 @@ At the start of your application you need to call the `PyKinectXEF.init()` funct
 
 This is the Python class that talks to the Microsoft Kinect service that is running on the local machine. The timeout argument specifies how long it should wait after receiving a frame of data from the Kinect Service before deciding any data streams have stopped. Once it has been created, you can invoke the the `listen()` method to begin collecting data that is being processed by the Kinect Service. By default, the `Capture.KinectService()` only captures skeleton data but you can change this by invoking `listen()` with keyword "getter" arguments:
 
-	App = PyKinectXEF.Capture.KinectService(timeout=2)
-	App.listen(getAudio=True, getVideo=True, getDepth=True, Clicking=True)
+```Python
+App = PyKinectXEF.Capture.KinectService(timeout=2)
+App.listen(getAudio=True, getVideo=True, getDepth=True, Clicking=True)
+```
 
 **Note:** Depth data capture has not been implemented yet
 
