@@ -1,2 +1,1 @@
 comtypes
-pyautogui
