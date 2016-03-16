@@ -78,11 +78,11 @@ The `Clicking` keyword is used to automatically step through files in Kinect Stu
 
 ### Example 2: Data Playback
 
+```Python
 """
     Example script for extracting Kinect Data from Kinect Studio
 """
 
-```Python
 if __name__ == "__main__":
 
     # Import module
