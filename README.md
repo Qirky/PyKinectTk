@@ -22,7 +22,7 @@ In the Examples folder there are two files; `ex-capture.py` and `ex-playback.py`
 
 ### Example 1: Data Capture
 
-```
+```Python
 """
     Example script for extracting Kinect Data from Kinect Studio
 """
@@ -78,24 +78,25 @@ The `Clicking` keyword is used to automatically step through files in Kinect Stu
 
 ### Example 2: Data Playback
 
-	"""
-	    Example script for extracting Kinect Data from Kinect Studio
-	"""
-	
-	if __name__ == "__main__":
-	
-	    # Import module
-	
-	    import PyKinectXEF
-	
-	    # Initialise work environment
-	
-	    PyKinectXEF.init()
-	
-	    # Create TKinter GUI to select recording
-	
-	    App = PyKinectXEF.Playback.KinectDataSelect()
+"""
+    Example script for extracting Kinect Data from Kinect Studio
+"""
 
+```Python
+if __name__ == "__main__":
+
+    # Import module
+
+    import PyKinectXEF
+
+    # Initialise work environment
+
+    PyKinectXEF.init()
+
+    # Create TKinter GUI to select recording
+
+    App = PyKinectXEF.Playback.KinectDataSelect()
+```
 
 
 Documentation
