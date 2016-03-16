@@ -14,13 +14,14 @@ Requirements
 * `PyGame <http://pygame.org/hifi.html>`_ (For Playback)*
 * `OpenCV2 <https://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_setup/py_setup_in_windows/py_setup_in_windows.html#install-opencv-python-in-windows>`_ (For colour stream capture)
 * `PyAutoGUI <https://pyautogui.readthedocs.org/en/latest/>`_ (For automated click-stepping - see below)
+* `comtypes <https://pypi.python.org/pypi/comtypes>`_ (To connect to the Kinect API)
 
 \* Non-official 64-bit installtion of PyGame can be found `here <http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame>`_
 
 Examples
 --------
 
-In the Examples folder there are two files; `ex-capture.py` and `ex-playback.py`. These can be used to collect data from a running Kinect Service, and also playback this data to the user.
+In the Examples folder there are two files; ``ex-capture.py`` and ``ex-playback.py``. These can be used to collect data from a running Kinect Service, and also playback this data to the user.
 
 Example 1: Data Capture
 ~~~~~~~~~~~~~~~~~~~~~~~
