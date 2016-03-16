@@ -3,7 +3,7 @@ About the Project
 
 **PyKinectXEF** is a Python package that allows you to extract the data you want from Microsoft extended event files (.xef) generated from the Microsoft Kinect V2 and even from a live stream of data. The package also comes with modules that allow you to play the captured data back, and even plot the data on graphs using matplot.
 
- 
+
 Requirements
 ------------
 
@@ -24,13 +24,9 @@ In the Examples folder there are two files; `ex-capture.py` and `ex-playback.py`
 
 ```Python
 """
-<<<<<<< HEAD
     ex-capture.py
-    
+
         Example script for extracting Kinect Data from Kinect Studio
-=======
-    Example script for extracting Kinect Data from Kinect Studio
->>>>>>> origin/master
 """
 
 if __name__ == "__main__":
@@ -50,11 +46,11 @@ if __name__ == "__main__":
     # Start capturing data using auto-click
 
     print "Listening for Kinect data"
-    
+
     App.listen(getVideo=True, Clicking=True)
 
     # Add a meaningful name to the recording
-    
+
     name = raw_input("Would you like to name your recording? ")
 
     App.NameRecording(name)
@@ -65,7 +61,7 @@ if __name__ == "__main__":
 
     App.close()
 ```
-##### The `Init()` Function 
+##### The `Init()` Function
 
 At the start of your application you need to call the `PyKinectXEF.init()` function. It checks the contents of `PyKinectXEF/utils/Settings/config` to see if it contains a filepath. If it does not, you will be asked to select a folder to set as your working environment. This creates a number of directories for storing extracted data. You will only be asked to set  your working environment on your first use, or if the path to the working environment directory changes. For more info on your working environment, see [Your Working Environment](http://foxdot.github.io/PyKinectXEF/API.html).
 
@@ -81,21 +77,17 @@ App.listen(getAudio=True, getVideo=True, getDepth=True, Clicking=True)
 **Note:** Depth data capture has not been implemented yet
 
 The `Clicking` keyword is used to automatically step through files in Kinect Studio, which is useful when you want to process more data intensive streams such as video. `Clicking` **should not** be set to `True` when capturing data from a live stream. For best results when capturing video data, record your data using the Kinect Studio as an `.xef` file and then process it using the automated clicking method. When doing so, you will be asked to hover over the "step file" button in Kinect Studio and press "Return". This will begin automatically clicking the "step file" button every 0.5 seconds (2fps) to ensure minimal video frames are dropped.  
- 
+
 ---
 
 ### Example 2: Data Playback
 
 ```Python
 """
-<<<<<<< HEAD
     ex-playback.py
 
         Example script for combining extracted
         data streams and playing them back to the user
-=======
-    Example script for extracting Kinect Data from Kinect Studio
->>>>>>> origin/master
 """
 
 if __name__ == "__main__":
@@ -109,14 +101,8 @@ if __name__ == "__main__":
     PyKinectXEF.init()
 
     # Create TKinter GUI to select recording
-<<<<<<< HEAD
 
     App = PyKinectXEF.Playback.KinectDataSelect()
-
-=======
-
-    App = PyKinectXEF.Playback.KinectDataSelect()
->>>>>>> origin/master
 ```
 
 
@@ -125,7 +111,7 @@ Documentation
 
 More detailed information on the PyKinectXEF API can be found here:
 
-http://foxdot.github.io/PyKinectXEF/API.html 
+http://foxdot.github.io/PyKinectXEF/API.html
 
 Acknowledgements
 ----------------
