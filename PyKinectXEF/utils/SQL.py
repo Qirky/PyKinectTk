@@ -122,7 +122,7 @@ BODY_TIME_TABLE         = "tbl_BodyTime"
 def CreateDatabase(filename):
     """ Creates the database and adds tables used by all performance data tables """
 
-    from .. import Skeleton
+    import Skeleton
     
     db = Database(filename)
 

@@ -11,6 +11,5 @@ setup(name='PyKinectXEF',
                 'PyKinectXEF.Capture',
                 'PyKinectXEF.Playback',
                 'PyKinectXEF.utils',
-                'PyKinectXEF.utils.PyKinect2',
-                'PyKinectXEF.utils.SQL'],
-      package_data={'PyKinectXEF.utils.SQL':['config']} )
+                'PyKinectXEF.utils.PyKinect2'],
+      package_data={'PyKinectXEF.utils':['Settings/*']} )
