@@ -8,7 +8,12 @@
 # Utility modules
 from ..utils import *
 from ..utils.SQL import *
-from ..utils.PyKinect2 import *
+
+# Attemt import import
+try:
+    from ..utils.PyKinect2 import *
+except ImportError as e:
+    print e    
 
 #: Import a user friendly wrapper for writing video / audio
 from Writers import VideoWriter, AudioWriter
