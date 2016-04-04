@@ -15,6 +15,11 @@ Requirements
 
 \* Non-official 64-bit installation of PyGame can be found [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame)
 
+Installation
+------------
+
+Download the `.zip` or `.tar.gz` file and extract its contents. Then, from the command line, change directory to where you extracted the files and run the command `python setup.py install` and you're good to go! I hope to have this up on `pip` in the near future.
+
 Examples
 --------
 
