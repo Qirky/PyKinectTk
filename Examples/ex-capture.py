@@ -8,15 +8,11 @@ if __name__ == "__main__":
 
     # Import package
 
-    import PyKinectXEF
-
-    # Initialise work environment
-
-    PyKinectXEF.init()
+    import PyKinectTk
 
     # Create connection to Kinect Service
 
-    App = PyKinectXEF.Capture.KinectService(timeout=2)
+    App = PyKinectTk.Capture.KinectService(timeout=2)
 
     # Start capturing data using auto-click
 

@@ -1,7 +1,7 @@
-About the Project
-=================
+The Python Kinect Toolkit
+=========================
 
-**PyKinectXEF** is a Python package that allows you to extract the data you want from Microsoft extended event files (.xef) generated from the Microsoft Kinect V2 and even from a live stream of data. The package also comes with modules that allow you to play the captured data back, and even plot the data on graphs using matplot.
+The **Python Kinect Toolkit** (PyKinectTk) is a Python package that allows you to extract the data you want from Microsoft extended event files (.xef) generated from the Microsoft Kinect V2, and even from a live stream of data. The package also comes with modules that allow you to play the captured data back, and plot the data on graphs using matplot.
 
 
 Requirements
@@ -30,7 +30,7 @@ In the Examples folder there are two files; `ex-capture.py` and `ex-playback.py`
 ```Python
 """
     ex-capture.py
-
+    
         Example script for extracting Kinect Data from Kinect Studio
 """
 
@@ -38,24 +38,20 @@ if __name__ == "__main__":
 
     # Import package
 
-    import PyKinectXEF
-
-    # Initialise work environment
-
-    PyKinectXEF.init()
+    import PyKinectTk
 
     # Create connection to Kinect Service
 
-    App = PyKinectXEF.Capture.KinectService(timeout=2)
+    App = PyKinectTk.Capture.KinectService(timeout=2)
 
     # Start capturing data using auto-click
 
     print "Listening for Kinect data"
-
+    
     App.listen(getVideo=True, Clicking=True)
 
     # Add a meaningful name to the recording
-
+    
     name = raw_input("Would you like to name your recording? ")
 
     App.NameRecording(name)
@@ -66,16 +62,16 @@ if __name__ == "__main__":
 
     App.close()
 ```
-##### The `Init()` Function
+##### First time use
 
-At the start of your application you need to call the `PyKinectXEF.init()` function. It checks the contents of `PyKinectXEF/utils/Settings/config` to see if it contains a filepath. If it does not, you will be asked to select a folder to set as your working environment. This creates a number of directories for storing extracted data. You will only be asked to set  your working environment on your first use, or if the path to the working environment directory changes. For more info on your working environment, see [Your Working Environment](http://foxdot.github.io/PyKinectXEF/API.html).
+On first import, PyKinectTk checks the contents of `PyKinectTk/utils/Settings/config` to see if it contains a filepath. If it does not, you will be asked to select a folder to set as your working environment. This creates a number of directories for storing extracted data. You will only be asked to set  your working environment on your first use, or if the path to the working environment directory changes. For more info on your working environment, see [Your Working Environment](http://foxdot.github.io/PyKinectXEF/API.html).
 
 ##### The `PyKinect.Capture.KinectService()` class
 
 This is the Python class that talks to the Microsoft Kinect service that is running on the local machine. The timeout argument specifies how long it should wait after receiving a frame of data from the Kinect Service before deciding any data streams have stopped. Once it has been created, you can invoke the the `listen()` method to begin collecting data that is being processed by the Kinect Service. By default, the `Capture.KinectService()` only captures skeleton data but you can change this by invoking `listen()` with keyword "getter" arguments:
 
 ```Python
-App = PyKinectXEF.Capture.KinectService(timeout=2)
+App = PyKinectTk.Capture.KinectService(timeout=2)
 App.listen(getAudio=True, getVideo=True, getDepth=True, Clicking=True)
 ```
 
@@ -89,25 +85,117 @@ The `Clicking` keyword is used to automatically step through files in Kinect Stu
 
 ```Python
 """
-    ex-playback.py
+ex-playback.py
 
-        Example script for combining extracted
-        data streams and playing them back to the user
+    Example script for combining extracted
+    data streams and playing them back to the user
+
+    To use the graphical user interface:
+
+        python ex-playback.py -GUI
+
+    CLI Usage:
+
+        python ex-playback.py <recording_id>
+
+        python ex-playback.py -n <recording_name>
+
+    Other flags:
+
+    -video  :   1 to display RGB video, 0 to skip. Default is 0.
+    -info   :   1 to display frame no. and time stamp, 0 to skip. Default is 1.
+    -body   :   1 to display wireframes, 0 to skip. Default is 1.
+    
+    -c <output.avi>     :   Signals the program to convert the playback data to an .avi file
+    -t <start:end>      :   Specifies the timeframe (in seconds) to playback
 """
+
 
 if __name__ == "__main__":
 
+    # Get command arguments from the user
+
+    import sys, shlex
+
+    args = sys.argv[1:] if sys.argv[1:] else shlex.split(raw_input("Input: "))
+
+    if len(args) < 1:
+        
+        print __doc__
+
+        sys.exit()
+    
     # Import module
 
-    import PyKinectXEF
-
-    # Initialise work environment
-
-    PyKinectXEF.init()
+    import PyKinectTk
 
     # Create TKinter GUI to select recording
 
-    App = PyKinectXEF.Playback.KinectDataSelect()
+    if "-GUI" in args:
+
+        application = PyKinectTk.Playback.KinectDataSelect()
+
+        sys.exit()
+
+    else:
+
+        application = PyKinectTk.Playback.KinectDataPlayer
+
+    # Can choose a recording by cli
+
+    kwargs = {}
+
+    # By default, the first argument is the id of the recordings
+
+    pid = args[0]
+
+    if "-n" in args:
+
+        pid = PyKinectTk.Load.PerformanceID(args[args.index("-n") + 1])
+
+    if "-c" in args:
+
+        application = PyKinectTk.Playback.ConvertKinect
+
+        kwargs['outputFile'] =  args[args.index("-c") + 1]
+
+    if "-t" in args:
+
+        time = args[args.index("-t") + 1].split(':')
+
+        time = tuple([float(t) if t else None for t in time])
+
+        kwargs['time'] = time
+
+    if "-video" in args:
+
+        kwargs['video'] = bool(args[args.index("-video") + 1])
+
+    if "-body" in args:
+
+        kwargs['body'] = bool(args[args.index("-body") + 1])
+
+    if "-info" in args:
+
+        kwargs['info'] = bool(args[args.index("-info") + 1])
+
+    # Run application
+
+    print "loading..." ,
+
+    try:
+
+        pid = int(pid)
+
+    except:
+
+        print "Argument %s is not a valid ID" % repr(pid)
+
+        sys.exit()
+
+    application(pid, **kwargs).run()
+
+    raw_input("done! Press return to exit")
 ```
 
 
@@ -116,7 +204,7 @@ Documentation
 
 More detailed information on the PyKinectXEF API can be found here:
 
-http://foxdot.github.io/PyKinectXEF/API.html
+http://qirky.github.io/PyKinectTk/API.html (TBD)
 
 Acknowledgements
 ----------------

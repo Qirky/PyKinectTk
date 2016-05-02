@@ -1,0 +1,446 @@
+"""
+    Plot.py
+
+    Uses matplotlib to plot distance, velocity, and acceleration of Kinect Body Frame joint data over time.
+    
+"""
+
+import matplotlib.pyplot as plt
+from math import sqrt
+
+from ..utils import Load
+
+def Lookup(dictionary, names, default):
+    """ Takes a dict and searches for multiple names, returns default if not found """
+    for name in names:
+        for value in dictionary:
+            if name.lower() == value.lower():
+                return dictionary[value]
+    return default
+
+def container(val):
+    """ Forces any values to container types """
+    if type(val) not in (list, tuple):
+        val = [val]
+    return val
+
+def delta(values):
+    """ Returns a list of differences between consecutive values """
+    diff = [(values[i]-values[i-1]) for i in range(1, len(values))]
+    return diff
+
+def midstep(values):
+    stepped = [(values[i] + values[i+1]) * 0.5 for i in range(len(values)-1) ]
+    return stepped
+
+def magnitude_all(values):
+    val = []
+    for i in range(1, len(values)):
+        val.append( magnitude(values[i], values[i-1]) )
+    return val
+
+class Plot:
+
+    def __init__(self):
+
+        pass
+
+
+
+class Plot2(object):
+    """ Object used for creating graphs of body joints 3D locations over time """
+
+    derivative_names = ["Distance", "Speed", "Acceleration"]
+
+    def __init__(self, performance_id):
+
+        self.bodies = Load.BodyData(performance_id)
+        self.title = ""
+
+        plt.xlabel("Time (seconds)")
+
+    def list_bodies(self, bodies):
+        if bodies == '*':
+            bodies = range(len(self.bodies))
+
+        if type(bodies) == int:
+            bodies = [bodies]
+
+        return bodies        
+
+    def plot(self, **kwargs):
+        """ Specifies how to plot the graph based on keyword arguments: """
+
+        plt.ylabel("Distance (m)")                   
+
+        bodies      = Lookup(kwargs, ['bodies','body'], '*')
+        joints      = Lookup(kwargs, ['joint', 'joints'], "Head")
+        data        = Lookup(kwargs, ['data','axis','axes'], 'x')
+        timeframe   = Lookup(kwargs, ["timeframe","time","times"], None )
+
+        dydx  = Lookup(kwargs, ['der','derivatives','prime'], 0 )
+
+        bodies = self.list_bodies(bodies)
+        joints = container(joints)
+        data   = container(data)
+        
+        # --- Plot lines to graph
+
+        for body in bodies:
+    
+            for joint in joints:
+
+                for axis in data:
+
+                    if len(axis) > 1:
+
+                        self.draw_line( self.bodies[body], joint, axis, dydx, timeframe )
+
+                    else:
+
+                        self.draw_line_single( self.bodies[body], joint, axis, dydx, timeframe )    
+
+        return
+
+    def draw_line(self, body, joint, axis, num_derivatives=1, timeframe=None):
+        """ Draws acc / vel of joints in 2-3 dimensions """
+
+        # X-Axis is ALWAYS time (dict of frame -> time)
+
+        time_pts = body.all_frame_time(timeframe)
+
+        # If we want to know different sets of derivatives, i.e. acc & vel - we can do so in a loop
+
+        for n in set(container(num_derivatives)):
+            
+            if n not in (1,2):
+                n = 1
+
+            # Get time values
+
+            time = sorted(time_pts.values())
+
+            # Get X, Y, Z values 
+
+            values = dict([(a, [body[joint].value(a, t) for t in sorted(time_pts.keys())]) for a in axis])
+
+            # calculate the change for each axis for each time step
+
+            size = None
+
+            for axis, data in values.items():
+
+                dy = delta(data)
+                dt = delta(time)
+
+                if size is None:
+                    size = len(dt)
+
+                dif = []
+
+                for i in range(size):
+
+                    dif.append(dy[i] / dt[i])
+
+                values[axis] = dif                
+
+            # Velocity is the sum of the change in directions
+
+            vel = []
+
+            for i in range(size):
+
+                sigma = 0
+
+                for axis in values.keys():
+
+                    sigma += values[axis][i]
+
+                vel.append(sigma)
+
+            # Set y_axis
+
+            y_axis = vel                
+
+            # Set the x-axis to just time values
+
+            x_axis = midstep(time)
+
+            # Calculate the magnitude (distance) between each point
+
+            #y_axis = self.magnitude_all(values)
+
+            # Calculate velocity if need be
+
+            # Plot line
+
+            plt.plot( x_axis, y_axis, label="%s %s %s %s" % (body, joint, 'xyz', 'Velocity') )
+            
+
+    def draw_line_single(self, body, joint, axis, num_derivatives=0, timeframe=None):
+        """ Draws a line that looks at a single axis """
+
+        # X-Axis is ALWAYS time (dict of frame -> time)
+
+        time_pts = body.all_frame_time(timeframe)
+
+        # If we want to know different sets of derivatives, i.e. acc & vel - we can do so in a loop
+
+        for n in set(container(num_derivatives)):
+
+            # Make sure we only calculate distance, veloctiy, or acceleration
+
+            if n not in (0,1,2):
+                n = 0
+
+            # Get values 
+
+            values = [body[joint].value(axis, t) for t in sorted(time_pts.keys())]
+
+            # Set the x-axis to just time values
+
+            x_axis = sorted(time_pts.values())
+
+            # Set the y-axis to start at zero
+
+            y_axis = [val - values[0] for val in values]
+
+            # For each derivative (distance, velocity, acceleration) - work out the change over time
+
+            for m in range(n):
+
+                dy = delta(y_axis)
+                dx = delta(x_axis)
+
+                x_axis = midstep(x_axis)
+                y_axis = []
+
+                for i in range(len(dy)):
+                    y_axis.append( dy[i] / dx[i] )
+
+
+            # Plot line
+
+            plt.plot( x_axis, y_axis, label="%s %s %s %s" % (body, joint, axis, self.derivative_names[n]) )
+                  
+        return
+
+
+##    def plot_pos(self, **kwargs):
+##        """ Specifies how to plot the graph based on keyword arguments: """
+##        plt.ylabel("Distance (m)")                   
+##
+##        bodies = Lookup(kwargs, ['bodies','body'], '*')
+##        joints = Lookup(kwargs, ['joint', 'Joints'], "Head")
+##        data   = Lookup(kwargs, ['data','axis','axes'], 'xyz')
+##
+##        bodies = self.list_bodies(bodies)
+##        joints = self.list_joints(joints)
+##        
+##        timeframe  = kwargs.get("timeframe", None )
+##
+##        # --- Plot lines to graph
+##
+##        for b in bodies:
+##
+##            body = self._bodies[b]
+##
+##            # X-Axis is ALWAYS time
+##
+##            x_axis = body.time()
+##
+##            # Iterate over the joints being plotted
+##
+##            for j in joints:
+##
+##                for axis in data:
+##
+##                    # Update the label depending on the keywords
+##
+##                    line_label = []
+##
+##                    # Get the timings of each frame
+##                    
+##                    y_axis = body[j].get_all(axis)
+##
+##                    # Specify the time frame to plot
+##
+##                    if timeframe:
+##
+##                        x_axis = [(i, t) for i, t in enumerate(x_axis) if timeframe[0] < t < timeframe[1]]
+##                        y_axis = [y_axis[i] for i, x in x_axis]
+##                        x_axis = [x[1] for x in x_axis]
+##
+##                    # Get the position over time relative to the starting point for the desired axis
+##
+##                    y_axis = [y - y_axis[0] for y in y_axis]
+##
+##                    # Plot line
+##
+##                    plt.plot(x_axis, y_axis, label="Body %d %s %s" % (b, j, axis))
+##
+##        return
+##
+##    def plot_vel(self, **kwargs):
+##
+##        plt.ylabel("Velocity (m/s)")
+##
+##        bodies = Lookup(kwargs, ['bodies','body'], '*')
+##        joints = Lookup(kwargs, ['joint', 'joints'], "Head")
+##
+##        bodies = self.list_bodies(bodies)
+##        joints = self.list_joints(joints)
+##
+##        timeframe  = kwargs.get("timeframe", None )
+##
+##        # --- Plot lines to graph
+##
+##        for b in bodies:
+##
+##            body = self._bodies[b]
+##
+##            for j in joints:
+##
+##                # Get the timings of each frame
+##
+##                x_axis = body.time()
+##
+##                # Get the 3D co-ordinate of the joint
+##                
+##                y_axis = [body[j][t] for t in body[j].keys()]
+##
+##                # Specify the time frame to plot
+##
+##                if timeframe:
+##
+##                    x_axis = [(i, t) for i, t in enumerate(x_axis) if timeframe[0] < t < timeframe[1]]
+##                    y_axis = [y_axis[i] for i, x in x_axis]
+##                    x_axis = [x[1] for x in x_axis]
+##
+##                # work out the velocity using v = d2-d1/t2-t1
+##
+##                tmp_y = []
+##                tmp_x = []
+##
+##                for t in range(len(y_axis) - 1):
+##
+##                    # Get the distance travelled using pythagoras
+##                    
+##                    D = sqrt(((y_axis[t+1][0] - y_axis[t][0]) ** 2) +
+##                             ((y_axis[t+1][1] - y_axis[t][1]) ** 2) +
+##                             ((y_axis[t+1][2] - y_axis[t][2]) ** 2))
+##                        
+##                    T = (x_axis[t+1] - x_axis[t])
+##                    V =  D / T
+##                    # Y Axis value is the velocity
+##                    tmp_y.append(V)
+##                    # X Axis value is the average time between frames
+##                    tmp_x.append(x_axis[t] + T/2.0)
+##                    
+##                y_axis = tmp_y
+##                x_axis = tmp_x
+##
+##                # Add line to the plot
+##
+##                plt.plot(x_axis, y_axis, label="Body %d %s Velocity" % (b, j))
+##
+##        return
+##
+##    def plot_acc(self, **kwargs):
+##
+##        plt.ylabel("Acceleration (m/s/s)")
+##
+##        bodies = Lookup(kwargs, ['bodies','body'], '*')
+##        joints = Lookup(kwargs, ['joint', 'joints'], "Head")
+##
+##        bodies = self.list_bodies(bodies)
+##        joints = self.list_joints(joints)
+##
+##        timeframe  = kwargs.get("timeframe", None )
+##
+##        # --- Plot lines to graph
+##
+##        for b in bodies:
+##
+##            body = self._bodies[b]
+##
+##            for j in joints:
+##
+##                # Get the timings of each frame
+##
+##                x_axis = body.time()
+##
+##                # Get the 3D co-ordinate of the joint
+##                
+##                y_axis = [body[j][t] for t in body[j].keys()]
+##
+##                # Specify the time frame to plot
+##
+##                if timeframe:
+##
+##                    x_axis = [(i, t) for i, t in enumerate(x_axis) if timeframe[0] < t < timeframe[1]]
+##                    y_axis = [y_axis[i] for i, x in x_axis]
+##                    x_axis = [x[1] for x in x_axis]
+##
+##                # work out the velocity using v = d2-d1/t2-t1
+##
+##                tmp_y = []
+##                tmp_x = []
+##
+##                for t in range(len(y_axis) - 1):
+##
+##                    # Get the distance travelled using pythagoras
+##                    
+##                    D = sqrt(((y_axis[t+1][0] - y_axis[t][0]) ** 2) +
+##                             ((y_axis[t+1][1] - y_axis[t][1]) ** 2) +
+##                             ((y_axis[t+1][2] - y_axis[t][2]) ** 2))
+##                        
+##                    T = (x_axis[t+1] - x_axis[t])
+##                    V =  D / T
+##                    tmp_y.append(V)
+##                    tmp_x.append(x_axis[t] + T/2.0)
+##
+##                y_axis = tmp_y
+##                x_axis = tmp_x
+##
+##                # Work out the acceleration using a = v2-v1/t2-t1
+##
+##                tmp_y = []
+##                tmp_x = []
+##
+##                for t in range(len(y_axis) - 1):
+##                    # Get the change in velocity
+##                    V = y_axis[t+1] - y_axis[t]
+##                    # Get the change in time
+##                    T = x_axis[t+1] - x_axis[t]
+##                    # Work out acceleration
+##                    A = V / T
+##
+##                    tmp_y.append(A)
+##                    tmp_x.append(x_axis[t] + T/2.0)
+##
+##                y_axis = tmp_y
+##                x_axis = tmp_x
+##
+##                # Add line to the plot
+##
+##                plt.plot(x_axis, y_axis, label="Body %d %s Acceleration" % (b, j))
+##
+##        return
+
+    def display(self, legend=True):
+        try:
+            if legend:
+                plt.legend()
+            plt.show()
+        except:
+            pass
+        return
+
+    def title(self, s):
+        self.title = s
+        plt.title(s)
+        return
+
+    def __str__(self):
+        return self.title
