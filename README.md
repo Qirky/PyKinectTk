@@ -64,7 +64,7 @@ if __name__ == "__main__":
 ```
 ##### First time use
 
-On first import, PyKinectTk checks the contents of `PyKinectTk/utils/Settings/config` to see if it contains a filepath. If it does not, you will be asked to select a folder to set as your working environment. This creates a number of directories for storing extracted data. You will only be asked to set  your working environment on your first use, or if the path to the working environment directory changes. For more info on your working environment, see [Your Working Environment](http://foxdot.github.io/PyKinectXEF/API.html).
+On first import, PyKinectTk checks the contents of `PyKinectTk/utils/Settings/config` to see if it contains a filepath. If it does not, you will be asked to select a folder to set as your working environment. This creates a number of directories for storing extracted data. You will only be asked to set  your working environment on your first use, or if the path to the working environment directory changes. For more info on your working environment, see [Your Working Environment](https://github.com/Qirky/PyKinectTk/blob/master/docs.md).
 
 ##### The `PyKinect.Capture.KinectService()` class
 
@@ -202,9 +202,7 @@ if __name__ == "__main__":
 Documentation
 -------------
 
-More detailed information on the PyKinectXEF API can be found here:
-
-http://qirky.github.io/PyKinectTk/API.html (TBD)
+Technical documentation for the project is found in the docs.md file found here: *[PyKinectTk Documentation](https://github.com/Qirky/PyKinectTk/blob/master/docs.md)*
 
 Acknowledgements
 ----------------
