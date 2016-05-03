@@ -1,40 +1,37 @@
 <!DOCTYPE html>
 <html>
-
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="PyKinectXEF : Python application for extracting data from Kinect Studio V2">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
-    <title>PyKinectXEF</title>
+    <title>PyKinectTk by Qirky</title>
   </head>
 
   <body>
+    <header>
+      <div class="inner">
+        <h1>PyKinectTk</h1>
+        <h2>Extracting data from Kinect Studio V2</h2>
+        <a href="https://github.com/Qirky/PyKinectTk" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/FoxDot/PyKinectXEF">View on GitHub</a>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="the-python-kinect-toolkit" class="anchor" href="#the-python-kinect-toolkit" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The Python Kinect Toolkit</h1>
 
-          <h1 id="project_title">PyKinectXEF</h1>
-          <h2 id="project_tagline">Python application for extracting data from Kinect Studio V2</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/FoxDot/PyKinectXEF/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/FoxDot/PyKinectXEF/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
-<a id="about-the-project" class="anchor" href="#about-the-project" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About the Project</h1>
-
-<p><strong>PyKinectXEF</strong> is a Python package that allows you to extract the data you want from Microsoft extended event files (.xef) generated from the Microsoft Kinect V2 and even from a live stream of data. The package also comes with modules that allow you to play the captured data back, and even plot the data on graphs using matplot.</p>
+<p>The <strong>Python Kinect Toolkit</strong> (PyKinectTk) is a Python package that allows you to extract the data you want from Microsoft extended event files (.xef) generated from the Microsoft Kinect V2, and even from a live stream of data. The package also comes with modules that allow you to play the captured data back, and plot the data on graphs using matplot.</p>
 
 <h2>
 <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
@@ -50,7 +47,12 @@
 <a href="http://pygame.org/hifi.html">PyGame</a>*</li>
 </ul>
 
-<p>* Non-official 64-bit installtion of PyGame can be found <a href="http://www.lfd.uci.edu/%7Egohlke/pythonlibs/#pygame">here</a></p>
+<p>* Non-official 64-bit installation of PyGame can be found <a href="http://www.lfd.uci.edu/%7Egohlke/pythonlibs/#pygame">here</a></p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Download the <code>.zip</code> or <code>.tar.gz</code> file and extract its contents. Then, from the command line, change directory to where you extracted the files and run the command <code>python setup.py install</code> and you're good to go! I hope to have this up on <code>pip</code> in the near future.</p>
 
 <h2>
 <a id="examples" class="anchor" href="#examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples</h2>
@@ -70,15 +72,11 @@
 
     <span class="pl-c"># Import package</span>
 
-    <span class="pl-k">import</span> PyKinectXEF
-
-    <span class="pl-c"># Initialise work environment</span>
-
-    PyKinectXEF.init()
+    <span class="pl-k">import</span> PyKinectTk
 
     <span class="pl-c"># Create connection to Kinect Service</span>
 
-    App <span class="pl-k">=</span> PyKinectXEF.Capture.KinectService(<span class="pl-v">timeout</span><span class="pl-k">=</span><span class="pl-c1">2</span>)
+    App <span class="pl-k">=</span> PyKinectTk.Capture.KinectService(<span class="pl-v">timeout</span><span class="pl-k">=</span><span class="pl-c1">2</span>)
 
     <span class="pl-c"># Start capturing data using auto-click</span>
 
@@ -99,16 +97,16 @@
     App.close()</pre></div>
 
 <h5>
-<a id="the-init-function" class="anchor" href="#the-init-function" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The <code>Init()</code> Function</h5>
+<a id="first-time-use" class="anchor" href="#first-time-use" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>First time use</h5>
 
-<p>At the start of your application you need to call the <code>PyKinectXEF.init()</code> function. It checks the contents of <code>PyKinectXEF/utils/Settings/config</code> to see if it contains a filepath. If it does not, you will be asked to select a folder to set as your working environment. This creates a number of directories for storing extracted data. You will only be asked to set  your working environment on your first use, or if the path to the working environment directory changes. For more info on your working environment, see <a href="http://foxdot.github.io/PyKinectXEF/API.html">Your Working Environment</a>.</p>
+<p>On first import, PyKinectTk checks the contents of <code>PyKinectTk/utils/Settings/config</code> to see if it contains a filepath. If it does not, you will be asked to select a folder to set as your working environment. This creates a number of directories for storing extracted data. You will only be asked to set  your working environment on your first use, or if the path to the working environment directory changes. For more info on your working environment, see <a href="https://github.com/Qirky/PyKinectTk/blob/master/docs.md">Your Working Environment</a>.</p>
 
 <h5>
 <a id="the-pykinectcapturekinectservice-class" class="anchor" href="#the-pykinectcapturekinectservice-class" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The <code>PyKinect.Capture.KinectService()</code> class</h5>
 
 <p>This is the Python class that talks to the Microsoft Kinect service that is running on the local machine. The timeout argument specifies how long it should wait after receiving a frame of data from the Kinect Service before deciding any data streams have stopped. Once it has been created, you can invoke the the <code>listen()</code> method to begin collecting data that is being processed by the Kinect Service. By default, the <code>Capture.KinectService()</code> only captures skeleton data but you can change this by invoking <code>listen()</code> with keyword "getter" arguments:</p>
 
-<div class="highlight highlight-source-python"><pre>App <span class="pl-k">=</span> PyKinectXEF.Capture.KinectService(<span class="pl-v">timeout</span><span class="pl-k">=</span><span class="pl-c1">2</span>)
+<div class="highlight highlight-source-python"><pre>App <span class="pl-k">=</span> PyKinectTk.Capture.KinectService(<span class="pl-v">timeout</span><span class="pl-k">=</span><span class="pl-c1">2</span>)
 App.listen(<span class="pl-v">getAudio</span><span class="pl-k">=</span><span class="pl-c1">True</span>, <span class="pl-v">getVideo</span><span class="pl-k">=</span><span class="pl-c1">True</span>, <span class="pl-v">getDepth</span><span class="pl-k">=</span><span class="pl-c1">True</span>, <span class="pl-v">Clicking</span><span class="pl-k">=</span><span class="pl-c1">True</span>)</pre></div>
 
 <p><strong>Note:</strong> Depth data capture has not been implemented yet</p>
@@ -121,49 +119,146 @@ App.listen(<span class="pl-v">getAudio</span><span class="pl-k">=</span><span cl
 <a id="example-2-data-playback" class="anchor" href="#example-2-data-playback" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example 2: Data Playback</h3>
 
 <div class="highlight highlight-source-python"><pre><span class="pl-s"><span class="pl-pds">"""</span></span>
-<span class="pl-s">    ex-playback.py</span>
+<span class="pl-s">ex-playback.py</span>
 <span class="pl-s"></span>
-<span class="pl-s">        Example script for combining extracted</span>
-<span class="pl-s">        data streams and playing them back to the user</span>
+<span class="pl-s">    Example script for combining extracted</span>
+<span class="pl-s">    data streams and playing them back to the user</span>
+<span class="pl-s"></span>
+<span class="pl-s">    To use the graphical user interface:</span>
+<span class="pl-s"></span>
+<span class="pl-s">        python ex-playback.py -GUI</span>
+<span class="pl-s"></span>
+<span class="pl-s">    CLI Usage:</span>
+<span class="pl-s"></span>
+<span class="pl-s">        python ex-playback.py &lt;recording_id&gt;</span>
+<span class="pl-s"></span>
+<span class="pl-s">        python ex-playback.py -n &lt;recording_name&gt;</span>
+<span class="pl-s"></span>
+<span class="pl-s">    Other flags:</span>
+<span class="pl-s"></span>
+<span class="pl-s">    -video  :   1 to display RGB video, 0 to skip. Default is 0.</span>
+<span class="pl-s">    -info   :   1 to display frame no. and time stamp, 0 to skip. Default is 1.</span>
+<span class="pl-s">    -body   :   1 to display wireframes, 0 to skip. Default is 1.</span>
+<span class="pl-s"></span>
+<span class="pl-s">    -c &lt;output.avi&gt;     :   Signals the program to convert the playback data to an .avi file</span>
+<span class="pl-s">    -t &lt;start:end&gt;      :   Specifies the timeframe (in seconds) to playback</span>
 <span class="pl-s"><span class="pl-pds">"""</span></span>
+
 
 <span class="pl-k">if</span> <span class="pl-c1">__name__</span> <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">"</span>__main__<span class="pl-pds">"</span></span>:
 
+    <span class="pl-c"># Get command arguments from the user</span>
+
+    <span class="pl-k">import</span> sys, shlex
+
+    args <span class="pl-k">=</span> sys.argv[<span class="pl-c1">1</span>:] <span class="pl-k">if</span> sys.argv[<span class="pl-c1">1</span>:] <span class="pl-k">else</span> shlex.split(<span class="pl-v">raw_input</span>(<span class="pl-s"><span class="pl-pds">"</span>Input: <span class="pl-pds">"</span></span>))
+
+    <span class="pl-k">if</span> <span class="pl-c1">len</span>(args) <span class="pl-k">&lt;</span> <span class="pl-c1">1</span>:
+
+        <span class="pl-c1">print</span> <span class="pl-c1">__doc__</span>
+
+        sys.exit()
+
     <span class="pl-c"># Import module</span>
 
-    <span class="pl-k">import</span> PyKinectXEF
-
-    <span class="pl-c"># Initialise work environment</span>
-
-    PyKinectXEF.init()
+    <span class="pl-k">import</span> PyKinectTk
 
     <span class="pl-c"># Create TKinter GUI to select recording</span>
 
-    App <span class="pl-k">=</span> PyKinectXEF.Playback.KinectDataSelect()</pre></div>
+    <span class="pl-k">if</span> <span class="pl-s"><span class="pl-pds">"</span>-GUI<span class="pl-pds">"</span></span> <span class="pl-k">in</span> args:
+
+        application <span class="pl-k">=</span> PyKinectTk.Playback.KinectDataSelect()
+
+        sys.exit()
+
+    <span class="pl-k">else</span>:
+
+        application <span class="pl-k">=</span> PyKinectTk.Playback.KinectDataPlayer
+
+    <span class="pl-c"># Can choose a recording by cli</span>
+
+    kwargs <span class="pl-k">=</span> {}
+
+    <span class="pl-c"># By default, the first argument is the id of the recordings</span>
+
+    pid <span class="pl-k">=</span> args[<span class="pl-c1">0</span>]
+
+    <span class="pl-k">if</span> <span class="pl-s"><span class="pl-pds">"</span>-n<span class="pl-pds">"</span></span> <span class="pl-k">in</span> args:
+
+        pid <span class="pl-k">=</span> PyKinectTk.Load.PerformanceID(args[args.index(<span class="pl-s"><span class="pl-pds">"</span>-n<span class="pl-pds">"</span></span>) <span class="pl-k">+</span> <span class="pl-c1">1</span>])
+
+    <span class="pl-k">if</span> <span class="pl-s"><span class="pl-pds">"</span>-c<span class="pl-pds">"</span></span> <span class="pl-k">in</span> args:
+
+        application <span class="pl-k">=</span> PyKinectTk.Playback.ConvertKinect
+
+        kwargs[<span class="pl-s"><span class="pl-pds">'</span>outputFile<span class="pl-pds">'</span></span>] <span class="pl-k">=</span>  args[args.index(<span class="pl-s"><span class="pl-pds">"</span>-c<span class="pl-pds">"</span></span>) <span class="pl-k">+</span> <span class="pl-c1">1</span>]
+
+    <span class="pl-k">if</span> <span class="pl-s"><span class="pl-pds">"</span>-t<span class="pl-pds">"</span></span> <span class="pl-k">in</span> args:
+
+        time <span class="pl-k">=</span> args[args.index(<span class="pl-s"><span class="pl-pds">"</span>-t<span class="pl-pds">"</span></span>) <span class="pl-k">+</span> <span class="pl-c1">1</span>].split(<span class="pl-s"><span class="pl-pds">'</span>:<span class="pl-pds">'</span></span>)
+
+        time <span class="pl-k">=</span> <span class="pl-c1">tuple</span>([<span class="pl-c1">float</span>(t) <span class="pl-k">if</span> t <span class="pl-k">else</span> <span class="pl-c1">None</span> <span class="pl-k">for</span> t <span class="pl-k">in</span> time])
+
+        kwargs[<span class="pl-s"><span class="pl-pds">'</span>time<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> time
+
+    <span class="pl-k">if</span> <span class="pl-s"><span class="pl-pds">"</span>-video<span class="pl-pds">"</span></span> <span class="pl-k">in</span> args:
+
+        kwargs[<span class="pl-s"><span class="pl-pds">'</span>video<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-c1">bool</span>(args[args.index(<span class="pl-s"><span class="pl-pds">"</span>-video<span class="pl-pds">"</span></span>) <span class="pl-k">+</span> <span class="pl-c1">1</span>])
+
+    <span class="pl-k">if</span> <span class="pl-s"><span class="pl-pds">"</span>-body<span class="pl-pds">"</span></span> <span class="pl-k">in</span> args:
+
+        kwargs[<span class="pl-s"><span class="pl-pds">'</span>body<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-c1">bool</span>(args[args.index(<span class="pl-s"><span class="pl-pds">"</span>-body<span class="pl-pds">"</span></span>) <span class="pl-k">+</span> <span class="pl-c1">1</span>])
+
+    <span class="pl-k">if</span> <span class="pl-s"><span class="pl-pds">"</span>-info<span class="pl-pds">"</span></span> <span class="pl-k">in</span> args:
+
+        kwargs[<span class="pl-s"><span class="pl-pds">'</span>info<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-c1">bool</span>(args[args.index(<span class="pl-s"><span class="pl-pds">"</span>-info<span class="pl-pds">"</span></span>) <span class="pl-k">+</span> <span class="pl-c1">1</span>])
+
+    <span class="pl-c"># Run application</span>
+
+    <span class="pl-c1">print</span> <span class="pl-s"><span class="pl-pds">"</span>loading...<span class="pl-pds">"</span></span> ,
+
+    <span class="pl-k">try</span>:
+
+        pid <span class="pl-k">=</span> <span class="pl-c1">int</span>(pid)
+
+    <span class="pl-k">except</span>:
+
+        <span class="pl-c1">print</span> <span class="pl-s"><span class="pl-pds">"</span>Argument <span class="pl-c1">%s</span> is not a valid ID<span class="pl-pds">"</span></span> <span class="pl-k">%</span> <span class="pl-c1">repr</span>(pid)
+
+        sys.exit()
+
+    application(pid, <span class="pl-k">**</span>kwargs).run()
+
+    <span class="pl-v">raw_input</span>(<span class="pl-s"><span class="pl-pds">"</span>done! Press return to exit<span class="pl-pds">"</span></span>)</pre></div>
 
 <h2>
 <a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h2>
 
-<p>More detailed information on the PyKinectXEF API can be found here:</p>
-
-<p><a href="http://foxdot.github.io/PyKinectXEF/API.html">http://foxdot.github.io/PyKinectXEF/API.html</a></p>
+<p>Technical documentation for the project is found in the docs.md file found here: <em><a href="https://github.com/Qirky/PyKinectTk/blob/master/docs.md">PyKinectTk Documentation</a></em></p>
 
 <h2>
 <a id="acknowledgements" class="anchor" href="#acknowledgements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Acknowledgements</h2>
 
 <p>This Python package uses a lot of code from PyKinect2, which can be found here: <a href="https://github.com/vladkol">https://github.com/vladkol</a>, and I would like to thank <em>vladkol</em> for his incredible work. His existing code has been adapted and is included as a sub-package as part of this module.</p>
-      </section>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/Qirky/PyKinectTk/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/Qirky/PyKinectTk/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/Qirky/PyKinectTk"></a> is maintained by <a href="https://github.com/Qirky">Qirky</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">PyKinectXEF maintained by <a href="https://github.com/FoxDot">FoxDot</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
-    
-
+  
   </body>
 </html>
