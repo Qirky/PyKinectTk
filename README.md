@@ -7,13 +7,10 @@ The **Python Kinect Toolkit** (PyKinectTk) is a Python package that allows you t
 Requirements
 ------------
 
-- [OpenCV2](https://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_setup/py_setup_in_windows/py_setup_in_windows.html#install-opencv-python-in-windows) and its dependencies for colour stream capture
-- [PyAutoGUI](https://pyautogui.readthedocs.org/en/latest/) for automated click-stepping
+- [OpenCV2](https://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_setup/py_setup_in_windows/py_setup_in_windows.html#install-opencv-python-in-windows)
+- [PyAutoGUI](https://pyautogui.readthedocs.org/en/latest/)
 - [comtypes](https://pypi.python.org/pypi/comtypes)
 - [matplotlib](https://pypi.python.org/pypi/matplotlib/1.5.1)
-- [PyGame](http://pygame.org/hifi.html)*
-
-\* Non-official 64-bit installation of PyGame can be found [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame)
 
 Installation
 ------------
@@ -197,7 +194,6 @@ if __name__ == "__main__":
 
     raw_input("done! Press return to exit")
 ```
-
 
 Documentation
 -------------

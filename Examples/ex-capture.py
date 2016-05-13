@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     print "Listening for Kinect data"
     
-    App.listen(getVideo=True, Clicking=True)
+    App.listen(getVideo=True, Clicking=True, duration=120)
 
     # Add a meaningful name to the recording
     

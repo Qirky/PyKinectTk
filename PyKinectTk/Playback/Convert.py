@@ -4,68 +4,45 @@
 """
 
 # Utility modules
+import sys
 from ..utils import *
 from ..utils.SQL import *
+
+import Player
+import ProgressBar
 from ..Capture import Writers
 
-from Player  import *
-from Display import *
-
-from pygame import display, font
-
-class ConvertKinect(Writers.VideoWriter, KinectDataPlayer):
+class ConvertKinect(Writers.VideoWriter, Player.KinectDataPlayer):
 
     def __init__(self, performance_id, outputFile=None, **kwargs):
 
         # Inheritance
-        KinectDataPlayer.__init__(self, performance_id, **kwargs)
+
+        Player.KinectDataPlayer.__init__(self, performance_id, **kwargs)
+        
         Writers.VideoWriter.__init__(self, VIDEO_DIR + outputFile, self._fps)
 
-        # Set to "full screen"
+        # Set up size
+
         self._size = self._width, self._height = self._resolution
-        # Create a small graphic to display progress
-        self._screen = pygame.display.set_mode((120,75))
-        self._progress = pygame.Surface((120,75))
+
+        # Progress bar
+
+        self._progress = kwargs.get("progressbar", None)
+
+        if self._progress is None:
+
+            self._progress = ProgressBar.Console(outputFile)
 
 
     def update(self):
         """ Over-rides KinectDataPlayer to write the output to the VideoWriter """
         
-        self.write( img(self._surface) )
-
-        self._progress.fill(BLACK)
-
-        try:
-            
-            self.draw_percent_complete()
-            
-        except:
-            
-            pass
-        
-        self._screen.blit( self._progress, (0,0))
-        
-        display.flip()
-        
-        return
-
-    def draw_percent_complete(self):
-        """ Draws the portion of video that has been saved as a percent """
+        self.write(self._surface)
 
         x = (float(self._current_frame - self._clip_start) / self._clip_length) * 100
 
-        text  = font.SysFont("Courier New", 32)
-
-        label = text.render("%.2f%%" % x , 1 , WHITE)
-
-        self._progress.blit(label, (5,5))
-
+        self._progress.update(x)        
+        
         return
-
-        
-    
-
-        
-        
-        
         

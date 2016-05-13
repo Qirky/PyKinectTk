@@ -1,5 +1,7 @@
 """
-    DO NOT USE THIS FOR ANY PUBLIC FACING DATABASES - IT IS INSECURE
+    SQL.py
+
+    Module for creating and querying the Recordings.db database
 """
 
 import sqlite3
@@ -35,6 +37,17 @@ class Database(object):
 
     def __exit__(self, exception_type, exception_val, trace):
         self.close()
+
+    def query(self, table, p_id, columns=None):
+        """ Returns the selected columns from table where performance_id == p_id """
+        columns = "*" if columns is None else ",".join(columns)
+        self._db.execute("SELECT {} FROM {} WHERE performance_id={}".format(columns, table, p_id))
+        return self._db.fetchall()
+
+    def delete(self, table, condition):
+        self._db.execute("DELETE FROM {} WHERE {}".format(table, condition))
+        print "DELETE FROM {} WHERE {}".format(table, condition)
+        return
 
     def get_tables(self):
         self._db.execute("SELECT * FROM sqlite_master WHERE type='table'")
@@ -191,11 +204,11 @@ def CreateDatabase(filename):
                                        ("time","real")])
 
     db.create_table(AUDIO_PATH_TABLE, [("performance_id","integer"),
-                                       ("path","text"),
-                                       ("start_time","real")])
+                                       ("path","text")])
 
     db.create_table(AUDIO_TIME_TABLE, [("performance_id","integer"),
-                                       ("start_time","real")])
+                                       ("start_time","real"),
+                                       ("end_time","real")])
 
     db.save()
     db.close()

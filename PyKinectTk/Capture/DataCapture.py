@@ -53,7 +53,8 @@ class KinectService():
         self._p_id = self.get_performance_id()
 
         # This is the descriptor for storing RGB video
-        self._video_path = VIDEO_DIR + 'Output_%.03d.avi' % self._p_id
+        self._video_fn   = 'Output_%.03d.avi' % self._p_id
+        self._video_path = VIDEO_DIR + self._video_fn
         self._video = VideoWriter(self._video_path)
         self._video_stream = DataStream()
 
@@ -337,6 +338,9 @@ class KinectService():
 
         # Release any files etc
 
+        if getBodies:
+            self.write_bodies()
+
         if getAudio:
             self._audio.write()
             
@@ -363,8 +367,14 @@ class KinectService():
         if audio:
             self._database.insert(AUDIO_PATH_TABLE, [("performance_id", self._p_id), ("audio_id", 0), ("path", self._audio_path), ("start_time", self._audio_stream.start_time())])
         if video:
-            self._database.insert(VIDEO_PATH_TABLE, [("performance_id", self._p_id), ("video_id", 0), ("path", self._video_path), ("start_time", self._video_stream.start_time())])
+            self._database.insert(VIDEO_PATH_TABLE, [("performance_id", self._p_id), ("video_id", 0), ("path", self._video_fn), ("start_time", self._video_stream.start_time())])
             self.write_stream_timestamps(VIDEO_TIME_TABLE, self._video_stream)
+        return
+
+    def write_bodies(self):
+        """ Stores an ID number for each body that appeared in the scene - can be edited later """
+        for n in self._bodies:
+            self._database.insert(BODY_NAME_TABLE, [("performance_id", self._p_id), ("body", n), ("name", n)])
         return
 
     def write_stream_timestamps(self, table, stream):

@@ -2,16 +2,17 @@
 from ..utils import *
 from ..utils.SQL import *
 
-# tKinter for creating user interface
-
+# TKinter for creating user interface
 import Tkinter as tk
+import ttk
 from tkFileDialog import askopenfilename
 from tkMessageBox import showwarning as WarnMsg
 from tkMessageBox import showinfo as InfoMsg
 
-# Player uses PyGame to run the file back to us
+# PyKinectTk Modules
 from Player import KinectDataPlayer
 from Convert import ConvertKinect
+from ProgressBar import GraphicalBar
 
 class KinectDataSelect:
     """ Tkinter UI for selecting a processed Kinect file for playing back """
@@ -26,8 +27,8 @@ class KinectDataSelect:
 
         self._db = Database(DATABASE)
         
-        tbl_PerformanceName = self._db["tbl_PerformanceName"]
-        tbl_AudioPath       = self._db["tbl_AudioPath"]
+        tbl_PerformanceName = self._db[PERFORMANCE_NAME_TABLE]
+        tbl_AudioPath       = self._db[AUDIO_PATH_TABLE]
 
         # Create widget to display selector
         self._listbox = tk.Listbox(self._root)
@@ -57,12 +58,13 @@ class KinectDataSelect:
         self._streams['depth'] = tk.IntVar(value=0)
 
         for stream in self._streams:
-            button = tk.Checkbutton(self._root, text=stream,
+            button = tk.Checkbutton(self._root,
+                                    text=stream,
                                     variable=self._streams[stream],
-                                    offvalue=False, onvalue=True,
+                                    offvalue=False,
+                                    onvalue=True,
                                     anchor=tk.W)
-            button.pack()
-        
+            button.pack()        
 
         # Location of videos
         self._video_fp_root = "%s.avi"
@@ -145,9 +147,9 @@ class KinectDataSelect:
 
             pid = self.performance_id()
 
-            # Begin pygame to video
+            # Begin conversion
 
-            player = ConvertKinect(pid, self.video_filename(), video=True)
+            player = ConvertKinect(pid, self.video_filename(), video=True, progressbar=GraphicalBar())
             player.run()
 
             InfoMsg("File Saved", "%s has been saved successfully" % self.video_filename())

@@ -8,20 +8,17 @@
 """
 
 # Playback modules
-from Display import *
 from Readers import *
 
 # Utility modules
 from ..utils import Load
 from ..utils import *
 from ..utils.SQL import *
-from ..utils.Colour import *
 
-# PyGame draws the skeleton figures
-import pygame
+# OpenCV to display
+import numpy as np
+import cv2
 
-# Uses copy to keep track of the last video frame in case it gets dropped
-from copy import copy
 
 class KinectDataPlayer:
 
@@ -31,12 +28,17 @@ class KinectDataPlayer:
         self._drawing = {}
         self._drawing['body']  = bool(kwargs.get('body', True))
         self._drawing['info']  = bool(kwargs.get('info', True))
-        self._drawing['video'] = bool(kwargs.get('video', False))
+        self._drawing['video'] = bool(kwargs.get('video', True))
         
         self._drawing['depth'] = bool(kwargs.get('depth', False)) # TODO
         self._drawing['audio'] = bool(kwargs.get('audio', False)) # TODO
 
         self._layers = self.layers_to_draw()
+
+        #: Set the FPS
+
+        self._fps = 30.0
+        self._wait = 20
 
         #: Define the timeframe to draw
 
@@ -50,9 +52,6 @@ class KinectDataPlayer:
 
         #: Dictionary of stream name -> dictionary of frame numbers and timestamps
         self._frames = {}
-
-        #: Dictionary of stream name -> PyGame surface of the last frame rendered in case it needs to be drawn again
-        self._last_frame_rendered = dict([(stream, None) for stream in self._drawing.keys() if self._drawing[stream] is True])
 
         #######################--- SETUP STREAMS ---#######################
 
@@ -69,6 +68,10 @@ class KinectDataPlayer:
             # This is a method draws the video image to screen
 
             self.draw['video'] = self.draw_video
+
+            self._videoSurface = None
+
+            self._wait = 1
 
         # Body data
 
@@ -114,38 +117,27 @@ class KinectDataPlayer:
             self.draw['info'] = self.draw_info
 
 
-        #######################--- SETUP PYGAME ---#######################
-
-        pygame.init()
+        #######################--- SETUP DISPLAY ---#######################
 
         self._resolution = 1920, 1080
 
-        self._fps = 30.0
-
         self._size = self._width, self._height = 960, 540
-            
-        self._screen = pygame.display.set_mode(self._size)
-        
-        self._clock = pygame.time.Clock()
 
         self._surface = None
 
         self._head_size = sum(self._size) / 200
 
-        # self._clip_length = max(self._frames.values(), key=lambda x: len(x)).size()
-
-        self._largest_clip = max(self._frames.values(), key=lambda x: x.max_time() )
+        self._largest_clip = max(self._frames.values(), key=lambda x: x.max_time() ).max_time()
 
         self._clip_start  = 0 if self._timeframe[0] is None else int(self._timeframe[0] * self._fps)
-        self._clip_length = self._largest_clip.max_frame() if  self._timeframe[1] is None else int(self._timeframe[1] * self._fps)
+
+        self._clip_length = int((self._largest_clip if self._timeframe[1] is None else self._timeframe[1]) * self._fps)
 
     #: General utility methods
 
     def update(self):
         """ Writes new frame to screen/file """
-        self._screen.blit(self._surface, (0,0))
-        self._clock.tick(self._fps)
-        pygame.display.flip()
+        cv2.imshow('PyKinectTk Playback', self._surface)
         return
 
     def layers_to_draw(self):
@@ -158,7 +150,7 @@ class KinectDataPlayer:
 
     def draw_new_frame(self):
         """ Clears the next frame to display """
-        self._surface.fill(BLACK)
+        self._surface = np.zeros((self._height, self._width, 3), np.uint8)
         return
 
     def ratio(self):
@@ -167,7 +159,7 @@ class KinectDataPlayer:
 
     def convert(self, *xy ):
         """ Converts an x,y value in original resolution to current frame size """
-        return [xy[i] * (float(self._size[i])/self._resolution[i]) for i in range(2)]
+        return tuple([int(xy[i] * (float(self._size[i])/self._resolution[i])) for i in range(2)])
 
     def frame_time(self, t, stream):
         """ Returns the frame number for data stream that occurs at time t """
@@ -195,7 +187,7 @@ class KinectDataPlayer:
 
                 # Label the body with appropriate value 0-5
 
-                self.draw_label(str(body), 36, body['Head'].pixel(n), COLOUR[i], offset=[50]*2)
+                self.draw_label(str(body), body['Head'].pixel(n), COLOUR[i], offset=[25]*2, size=2)
 
                 # Draw X, Y, Z data for certain joints
 
@@ -227,18 +219,18 @@ class KinectDataPlayer:
                     self.draw_bone(start, end, colour)
                             
                         
-    def draw_bone(self, xy1, xy2, colour, width=3):
+    def draw_bone(self, xy1, xy2, colour, width=2):
         try:
             start = self.convert(*xy1)
             end   = self.convert(*xy2)
-            pygame.draw.aaline(self._surface, colour, start, end, width)
+            cv2.line(self._surface, start, end, colour, width)
         except:
             return
 
     def draw_head(self, xy, colour):
         try:
-            pos = [int(a) for a in self.convert(*xy)]
-            pygame.draw.circle(self._surface, colour, pos, self._head_size)
+            pos = self.convert(*xy)
+            cv2.circle(self._surface, pos, self._head_size, colour, -1)
         except:
             return
 
@@ -247,87 +239,68 @@ class KinectDataPlayer:
     def draw_video(self, n):
         """ Reads the next frame of video """
 
-        count = 0
+        if n > self._frame_playing['video']:
+
+            self._video.set_frame(n)
+
+            self._videoSurface = self._video.read()
+
+            self._videoSurface = cv2.resize(self._videoSurface, (self._width, self._height))
+
+            self._frame_playing['video'] = n
+
+        # Draw onto self._screen
         
-        while self._frame_playing['video'] < n:
-
-            count += 1
-
-            self._frame_playing['video'] += 1
-
-        if count > 0:
-
-            for n in range(count):
-
-                videoFrame = self._video.nextFrame()
-                    
-            videoSurface = surface(videoFrame, self.ratio())
-
-            self._surface = videoSurface
-
-            self._last_frame_rendered['video'] = copy(videoSurface)
-
-        else:
-
-            self._surface = self._last_frame_rendered['video']
+        self._surface = np.copy(self._videoSurface)
 
         return
 
     #: Drawing information labels
 
-    def draw_label(self, text, size, xy, colour, offset=(0,0)):
+    def draw_label(self, text, xy, colour, offset=(0,0), size=1):
         try:
-            font = pygame.font.Font(None, size)
-            label = font.render(str(text),1,colour)
-            pos = [val - offset[i] for i, val in enumerate(self.convert(*xy))]
-            self._surface.blit(label, pos)
-        except:       
+            pos = tuple([val - offset[i] for i, val in enumerate(self.convert(*xy))])
+            font = cv2.FONT_HERSHEY_PLAIN
+            cv2.putText(self._surface, str(text), pos, font, size, colour, 1, cv2.LINE_AA)
+        except:
             return
 
     def draw_info(self, t):
         """ Draws frame time and num """
-        y, offset = 0, 25
+        y, offset = 25, 25
         for stream, drawing in self._drawing.items():
             if drawing and stream is not 'info':
                 try:
                     frame_number = self.frame_time(t, stream)
                     real_time = self._frames[stream][frame_number]
-                    self.draw_label("%s Frame %06d: %.4f" % (stream, frame_number, real_time), 24, (0,y), WHITE)
+                    self.draw_label("%s Frame %06d: %.4f" % (stream, frame_number, real_time), (0,y), WHITE)
                     y += offset
                 except:
                     pass
         return
+    
+    def quitting(self):
+        return cv2.waitKey(self._wait) & 0xFF == ord('q')
 
-    @staticmethod
-    def quitting():
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return True
-        return False
-
-    def release(self):
-        """ Placeholder """
-        return
-
-    def run(self):
+    def run(self, verbose=False):
         
-        """ Plays the performance using real time 'rendering' in PyGame.
+        """ Plays the performance using real time 'rendering' in Open CV.
 
             The program loops at 30fps and then uses the timestamp for each stream
             to decide whether or not to render the next frame
         """
         
-        self._surface = pygame.Surface(self._size)
-
         for frame in xrange(self._clip_start, self._clip_length):
 
             self._current_frame = frame
 
-            # Check for exits
-            if self.quitting():
-                break
-
             t = frame / self._fps
+
+            # Check for exits
+
+            if self.quitting() or t >= self._largest_clip:
+
+                break
 
             # Start by clearing the frame
 
@@ -339,7 +312,15 @@ class KinectDataPlayer:
 
                 if t >= self.entry_time(stream):
 
-                    self.draw[stream](self.frame_time(t, stream))
+                    try:
+
+                        self.draw[stream](self.frame_time(t, stream))
+
+                    except TimeIndexError as e:
+
+                        if verbose:
+
+                            print "Error in %s stream: %s" % (stream, e)
 
             # Update the screen
                 
@@ -353,5 +334,4 @@ class KinectDataPlayer:
         """ Closes and open modules / files etc """
         if self._drawing['video']:
             self._video.close()
-        pygame.quit()
-        self.release()
+        cv2.destroyAllWindows()

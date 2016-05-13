@@ -12,12 +12,27 @@
 import utils
 
 from Tkinter import Tk
-from tkFileDialog import askdirectory
+from tkFileDialog import askdirectory, asksaveasfilename
 from os.path import isdir, realpath
+
+def select_folder():
+    root = Tk()
+    root.withdraw()
+    path = realpath(askdirectory(parent=root))  
+    root.destroy()
+    return path
+
+def save_file():
+    root = Tk()
+    root.withdraw()
+    path = realpath(asksaveasfilename(parent=root))  
+    root.destroy()
+    return path
 
 filename = utils.config
 
 try:
+    
     # Read the location of the work environment
     with open(filename) as f:
         path = f.read().strip()
@@ -30,13 +45,12 @@ try:
 
         raise
 except:
+
     # If one is not set, or doesn't exist anymore, ask the user to choose
-    root = Tk()
-    root.withdraw()
-    path = realpath(askdirectory(parent=root))  
-    root.destroy()
+    
     with open(filename, 'w') as f:
-        f.write(path)
+
+        f.write(select_folder())
 
 # Create the selected work environment
     

@@ -16,9 +16,14 @@ def BodyData(p_id):
     with Database(DATABASE) as db:
         table = JOINT_DATA_TABLE, BODY_TIME_TABLE, BODY_NAME_TABLE
         
-        data = [row for row in db[table[0]] if row['performance_id'] == int(p_id)]
-        time = [row for row in db[table[1]] if row['performance_id'] == int(p_id)]
-        role = [row['name'] for row in db[table[2]] if row['performance_id'] == int(p_id)]
+        # Load the co-ordinates and frame timestamps
+        
+        data = db.query(JOINT_DATA_TABLE, p_id)
+        time = db.query(BODY_TIME_TABLE, p_id)
+
+        # Load any custom name labels for the bodies
+
+        role = [r[0] for r in db.query(BODY_NAME_TABLE, p_id, columns=("name",))]
         
     # Convert time to a dict
 
@@ -55,7 +60,7 @@ def VideoData(p_id):
 
     with Database(DATABASE) as db:
 
-        data = [row for row in db[VIDEO_TIME_TABLE] if row['performance_id'] == int(p_id)]
+        data = db.query(VIDEO_TIME_TABLE, p_id)
 
     # Return as a dict -> Frame no. & Time
 
@@ -114,14 +119,15 @@ class FrameTime:
 
     def frame_at_time(self, time):
 
-        for i, frame in enumerate(self.frames):
+        for i in range(len(self.frames)-1):
 
             if time <= self.frametimes[self.frames[i+1]]:
 
-                return frame      
+                return self.frames[i]
 
+        else:
 
-
+            raise TimeIndexError("No frame found at time '{}'".format(time))
 
 def PerformanceID(PerformanceName):
     """ Returns the ID number of a recording based on a name - case invariant.
@@ -136,7 +142,27 @@ def PerformanceID(PerformanceName):
                 return row['performance_id']
 
     raise KeyError("Recording '%s' not found" % PerformanceName)
-        
+
+
+
+def DeletePerformance(p_id):
+    """ For each table in the database, remove all records where performance_id == p_id """
+
+    with Database(DATABASE) as db:
+
+        for tbl in db.get_tables():
+
+            if "performance_id" in db.get_columns(tbl):
+
+                db.delete(tbl, "performance_id = %s" % str(p_id))
+
+    return True
+
+
+# Exceptions
+
+class TimeIndexError(Exception):
+    pass
 
 
         

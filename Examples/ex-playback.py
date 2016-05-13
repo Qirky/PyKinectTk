@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     if len(args) < 1:
         
-        print __doc__
+        raw_input( __doc__ )
 
         sys.exit()
     
@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
     # Run application
 
-    print "loading..." ,
+    print "loading..."
 
     try:
 
@@ -109,8 +109,6 @@ if __name__ == "__main__":
 
     application(pid, **kwargs).run()
 
-    raw_input("done! Press return to exit")
-
+    print
     
-
-    
+    raw_input("Done! Press return to exit")
