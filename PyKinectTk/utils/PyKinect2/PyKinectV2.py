@@ -2211,7 +2211,7 @@ tagSTATSTG._fields_ = [
     ('grfStateBits', c_ulong),
     ('reserved', c_ulong),
 ]
-assert sizeof(tagSTATSTG) == 80, sizeof(tagSTATSTG)
+assert sizeof(tagSTATSTG) == 72, sizeof(tagSTATSTG)
 assert alignment(tagSTATSTG) == 8, alignment(tagSTATSTG)
 IAudioBeamList._methods_ = [
     COMMETHOD(['propget'], HRESULT, 'BeamCount',
