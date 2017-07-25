@@ -84,7 +84,7 @@ class KinectDataSelect:
 
     def selected(self):
         """ Returns the index of the selected item """
-        return self._listbox.curselection()[0]
+        return int(self._listbox.curselection()[0])
 
     def performance_name(self):
         """ Returns the name of the selected item """
